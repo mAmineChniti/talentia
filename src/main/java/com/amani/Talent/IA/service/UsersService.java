@@ -2,6 +2,7 @@ package com.amani.Talent.IA.service;
 
 
 import com.amani.Talent.IA.config.CloudinaryConfig;
+import com.amani.Talent.IA.entity.Role;
 import com.amani.Talent.IA.entity.users;
 import com.amani.Talent.IA.repository.UsersRepository;
 
@@ -32,6 +33,8 @@ public class UsersService {
 
 
 
+
+
     // =====================================
     // Créer utilisateur avec photo profil
     // =====================================
@@ -53,8 +56,8 @@ public class UsersService {
         );
 
         // Rôle par défaut
-        if (user.getRole() == null || user.getRole().isBlank()) {
-            user.setRole("USER");
+        if (user.getRole() == null) {
+            user.setRole(Role.CANDIDATE);
         }
 
         return usersRepository.save(user);
@@ -77,6 +80,7 @@ public class UsersService {
 
         return usersRepository.save(user);
     }
+
 
 
 
@@ -181,7 +185,6 @@ public class UsersService {
 
 
 
-
     // =====================================
     // Modifier utilisateur
     // =====================================
@@ -200,6 +203,8 @@ public class UsersService {
 
         users user =
                 getUserById(id);
+
+
 
 
 
@@ -288,11 +293,6 @@ public class UsersService {
 
 
 
-        // Modifier rôle
-
-        user.setRole(
-                newUser.getRole()
-        );
 
 
 
@@ -310,6 +310,8 @@ public class UsersService {
             );
 
         }
+
+
 
 
 
@@ -339,11 +341,12 @@ public class UsersService {
 
 
 
+
+
+
         return usersRepository.save(user);
 
     }
-
-
 
 
 
@@ -367,6 +370,33 @@ public class UsersService {
 
 
         usersRepository.delete(user);
+
+    }
+
+
+
+
+    // =====================================
+    // Changer le rôle (admin only)
+    // =====================================
+
+
+    public users changeRole(
+            Integer targetUserId,
+            Role newRole
+    ){
+
+        if(newRole != Role.HR && newRole != Role.ADMIN){
+            throw new RuntimeException(
+                    "On ne peut promouvoir qu'en HR ou ADMIN"
+            );
+        }
+
+        users user = getUserById(targetUserId);
+
+        user.setRole(newRole);
+
+        return usersRepository.save(user);
 
     }
 

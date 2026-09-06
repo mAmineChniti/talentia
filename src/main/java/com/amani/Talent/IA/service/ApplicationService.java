@@ -41,6 +41,8 @@ public class ApplicationService {
 
     private final GroqService groqService;
 
+    private final EmailService emailService;
+
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -366,6 +368,12 @@ public class ApplicationService {
                 .collect(Collectors.toList());
 
     }
+    public List<ApplicationResponse> getApplicationsByPostId(Long postId) {
+        return applicationRepository.findByPostId(postId)
+                .stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
     public ApplicationResponse getApplicationById(
             long id
     ){
@@ -383,6 +391,223 @@ public class ApplicationService {
         return convertToResponse(application);
 
     }
+
+
+
+
+    // =====================================
+    // Changer le statut d'une candidature
+    // Valide les transitions autorisées
+    // Si ACCEPTED → le candidat devient EMPLOYEE
+    // =====================================
+
+
+    public ApplicationResponse updateStatus(
+            Long applicationId,
+            ApplicationStatus newStatus
+    ){
+
+
+        Application application =
+                applicationRepository.findById(applicationId)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Candidature introuvable"
+                                )
+                        );
+
+
+        ApplicationStatus currentStatus =
+                application.getStatus();
+
+
+        // Valider la transition
+        if(!isValidTransition(currentStatus, newStatus)){
+
+            throw new RuntimeException(
+                    "Transition invalide : "
+                            + currentStatus
+                            + " → "
+                            + newStatus
+            );
+
+        }
+
+
+        application.setStatus(newStatus);
+
+
+        applicationRepository.save(application);
+
+
+
+
+        // Envoyer email de notification
+        sendStatusChangeEmail(application, newStatus);
+
+
+
+
+        // Si accepté → promouvoir le candidat en EMPLOYEE
+
+        if(newStatus == ApplicationStatus.ACCEPTED){
+
+            users user =
+                    application.getCandidate().getUser();
+
+            user.setRole(Role.EMPLOYEE);
+
+            usersRepository.save(user);
+
+        }
+
+
+
+
+        return convertToResponse(application);
+
+    }
+
+
+
+
+    // =====================================
+    // Vérifier si la transition est valide
+    // =====================================
+
+
+    private boolean isValidTransition(
+            ApplicationStatus from,
+            ApplicationStatus to
+    ){
+
+        return switch(from){
+
+            case PENDING ->
+                    to == ApplicationStatus.HR_INTERVIEW
+                            || to == ApplicationStatus.REJECTED;
+
+            case HR_INTERVIEW ->
+                    to == ApplicationStatus.TECHNICAL_INTERVIEW
+                            || to == ApplicationStatus.REJECTED;
+
+            case TECHNICAL_INTERVIEW ->
+                    to == ApplicationStatus.ACCEPTED
+                            || to == ApplicationStatus.REJECTED;
+
+            case ACCEPTED -> false;
+
+            case REJECTED -> false;
+
+        };
+
+    }
+
+
+
+
+    // =====================================
+    // Email de notification de changement de statut
+    // =====================================
+
+
+    private void sendStatusChangeEmail(
+            Application application,
+            ApplicationStatus newStatus
+    ){
+
+        String email =
+                application.getCandidate()
+                        .getUser().getEmail();
+
+        String name =
+                application.getCandidate()
+                        .getUser().getName();
+
+
+        String subject;
+        String body;
+
+
+        switch(newStatus){
+
+
+            case HR_INTERVIEW -> {
+
+                subject = "Entretien RH planifié - Talent AI";
+
+                body =
+                        "Bonjour " + name + ",\n\n"
+                                + "Votre candidature a été acceptée pour un entretien RH.\n\n"
+                                + "Un entretien va être planifié prochainement.\n\n"
+                                + "Cordialement,\nEquipe RH Talent AI";
+
+            }
+
+
+            case TECHNICAL_INTERVIEW -> {
+
+                subject = "Entretien technique planifié - Talent AI";
+
+                body =
+                        "Bonjour " + name + ",\n\n"
+                                + "Félicitations ! Vous avez été sélectionné pour un entretien technique.\n\n"
+                                + "Un entretien technique va être planifié prochainement.\n\n"
+                                + "Cordialement,\nEquipe RH Talent AI";
+
+            }
+
+
+            case ACCEPTED -> {
+
+                subject = "Candidature acceptée - Talent AI";
+
+                body =
+                        "Bonjour " + name + ",\n\n"
+                                + "Nous avons le plaisir de vous informer que votre candidature a été acceptée !\n\n"
+                                + "Vous allez recevoir les prochaines étapes pour finaliser votre intégration.\n\n"
+                                + "Bienvenue dans l'équipe !\n\n"
+                                + "Cordialement,\nEquipe RH Talent AI";
+
+            }
+
+
+            case REJECTED -> {
+
+                subject = "Candidature non retenue - Talent AI";
+
+                body =
+                        "Bonjour " + name + ",\n\n"
+                                + "Nous avons le regret de vous informer que votre candidature n'a pas été retenue.\n\n"
+                                + "Nous vous encourageons à postuler à d'autres offres.\n\n"
+                                + "Cordialement,\nEquipe RH Talent AI";
+
+            }
+
+
+            default -> {
+
+                subject = "Mise à jour de votre candidature - Talent AI";
+
+                body =
+                        "Bonjour " + name + ",\n\n"
+                                + "Le statut de votre candidature a été mis à jour : "
+                                + newStatus + "\n\n"
+                                + "Cordialement,\nEquipe RH Talent AI";
+
+            }
+
+
+        }
+
+
+        emailService.sendEmail(email, subject, body);
+
+    }
+
+
+
+
     private ApplicationResponse convertToResponse(
             Application application
     ){
@@ -400,6 +625,13 @@ public class ApplicationService {
 
         response.setCandidateId(
                 application.getCandidate().getId()
+        );
+
+
+        response.setUserId(
+                application.getCandidate()
+                        .getUser()
+                        .getId()
         );
 
 

@@ -2,6 +2,7 @@ package com.amani.Talent.IA.controller;
 
 
 import com.amani.Talent.IA.entity.users;
+import com.amani.Talent.IA.entity.Role;
 import com.amani.Talent.IA.service.UsersService;
 
 
@@ -41,10 +42,6 @@ public class UsersController {
 
 
 
-    // ==================================
-    // Ajouter utilisateur + photo profil
-    // ==================================
-
 
     @PostMapping
     public users createUser(@RequestBody users user) {
@@ -71,10 +68,6 @@ public class UsersController {
 
 
 
-    // ==================================
-    // Tous les utilisateurs
-    // ==================================
-
 
     @GetMapping
     public List<users> getAllUsers(){
@@ -89,10 +82,6 @@ public class UsersController {
 
 
 
-
-    // ==================================
-    // Utilisateur par ID
-    // ==================================
 
 
     @GetMapping("/{id}")
@@ -113,10 +102,6 @@ public class UsersController {
 
 
 
-    // ==================================
-    // Recherche par email
-    // ==================================
-
 
     @GetMapping("/email/{email}")
     public users getByEmail(
@@ -135,10 +120,6 @@ public class UsersController {
 
 
 
-
-    // ==================================
-    // Modifier utilisateur + photo
-    // ==================================
 
 
     @PutMapping(
@@ -173,10 +154,6 @@ public class UsersController {
 
 
 
-    // ==================================
-    // Supprimer utilisateur
-    // ==================================
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(
@@ -192,6 +169,22 @@ public class UsersController {
         return ResponseEntity.ok(
                 "Utilisateur supprimé"
         );
+
+    }
+
+
+
+
+    @PutMapping("/{id}/role")
+    public users changeRole(
+
+            @PathVariable Integer id,
+
+            @RequestParam Role role
+
+    ){
+
+        return usersService.changeRole(id, role);
 
     }
 

@@ -45,14 +45,6 @@ public class InterviewController {
 
 
 
-
-
-
-
-    // =====================================
-    // GET BY ID
-    // =====================================
-
     @GetMapping("/{id}")
     public InterviewResponse getInterviewById(
             @PathVariable Integer id
@@ -64,15 +56,6 @@ public class InterviewController {
 
 
 
-
-
-
-
-
-
-    // =====================================
-    // UPDATE INTERVIEW
-    // =====================================
 
     @PutMapping("/{id}")
     public InterviewResponse updateInterview(
@@ -90,14 +73,6 @@ public class InterviewController {
 
 
 
-
-
-
-
-    // =====================================
-    // DELETE INTERVIEW
-    // =====================================
-
     @DeleteMapping("/{id}")
     public String deleteInterview(
             @PathVariable Integer id
@@ -113,14 +88,6 @@ public class InterviewController {
 
 
 
-
-
-
-
-
-    // =====================================
-    // CONFIRMATION CANDIDAT
-    // =====================================
 
     @GetMapping("/confirm/{id}")
     public String confirmInterview(
@@ -233,7 +200,6 @@ font-size:14px;
 margin-top:5px;
 
 }
-
 
 
 
@@ -448,7 +414,6 @@ Plateforme intelligente RH
 
 
 
-
 <div class="content">
 
 
@@ -482,7 +447,6 @@ Merci pour votre intérêt envers
 <b>Talent AI</b>.
 
 </p>
-
 
 
 
@@ -534,7 +498,6 @@ Entretien RH
 
 
 
-
 <a class="button" href="#">
 
 Retour Talent AI
@@ -545,7 +508,6 @@ Retour Talent AI
 
 
 </div>
-
 
 
 
@@ -569,7 +531,6 @@ Retour Talent AI
 
 """;
     }
-
 
 
 

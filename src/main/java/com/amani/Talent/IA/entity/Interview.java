@@ -37,7 +37,7 @@ public class Interview {
 
 
 
-    // Lien Google Meet si ONLINE
+    // Lien Jitsi Meet si ONLINE
     private String meetingLink;
 
 

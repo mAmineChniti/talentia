@@ -14,6 +14,9 @@ public class ApplicationResponse {
     private long id;
 
 
+    private long userId;
+
+
     private long candidateId;
 
 

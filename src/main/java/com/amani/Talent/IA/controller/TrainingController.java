@@ -84,6 +84,7 @@ public class TrainingController {
 
 
 
+
     @PutMapping("/complete/{id}")
     public TrainingEnrollment complete(
             @PathVariable Long id,

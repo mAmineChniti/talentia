@@ -30,7 +30,6 @@ public class EmployeeController {
 
 
 
-
     @PostMapping
     public EmployeeResponse createEmployee(
             @RequestBody EmployeeRequest request
@@ -43,18 +42,12 @@ public class EmployeeController {
 
 
 
-
-
-
     @GetMapping
     public List<EmployeeResponse> getAll(){
 
         return employeeService.getAllEmployees();
 
     }
-
-
-
 
 
 
@@ -71,9 +64,6 @@ public class EmployeeController {
 
 
 
-
-
-
     @PutMapping("/{id}")
     public EmployeeResponse update(
             @PathVariable Integer id,
@@ -86,9 +76,6 @@ public class EmployeeController {
         );
 
     }
-
-
-
 
 
 

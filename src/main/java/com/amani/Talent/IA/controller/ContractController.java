@@ -30,7 +30,6 @@ public class ContractController {
 
 
 
-
     @PostMapping("/employee/{employeeId}")
     public ContractResponse createContract(
 
@@ -51,9 +50,6 @@ public class ContractController {
 
 
 
-
-
-
     @GetMapping
     public List<ContractResponse> getAll(){
 
@@ -61,9 +57,6 @@ public class ContractController {
         return contractService.getAllContracts();
 
     }
-
-
-
 
 
 
@@ -79,9 +72,6 @@ public class ContractController {
         return contractService.getContractById(id);
 
     }
-
-
-
 
 
 
@@ -103,9 +93,6 @@ public class ContractController {
 
 
 
-
-
-
     @PutMapping("/{id}")
     public ContractResponse update(
 
@@ -122,9 +109,6 @@ public class ContractController {
         );
 
     }
-
-
-
 
 
 

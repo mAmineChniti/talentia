@@ -29,12 +29,6 @@ public class PasswordResetController {
 
 
 
-
-    // ==========================================
-    // Demander réinitialisation mot de passe
-    // ==========================================
-
-
     @PostMapping("/forgot")
     public ResponseEntity<String> forgotPassword(
 
@@ -61,11 +55,6 @@ public class PasswordResetController {
 
 
 
-
-
-    // ==========================================
-    // Modifier nouveau mot de passe
-    // ==========================================
 
 
     @PostMapping("/reset")
@@ -99,11 +88,6 @@ public class PasswordResetController {
 
 
 
-
-
-    // ==========================================
-    // Vérifier token
-    // ==========================================
 
 
     @GetMapping("/validate/{token}")

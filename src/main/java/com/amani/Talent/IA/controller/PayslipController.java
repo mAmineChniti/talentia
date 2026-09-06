@@ -33,8 +33,6 @@ public class PayslipController {
 
 
 
-    // Générer une fiche de paie
-
     @PostMapping("/generate/{payrollId}")
     public ResponseEntity<PayslipResponse> generatePayslip(
             @PathVariable Long payrollId
@@ -49,8 +47,6 @@ public class PayslipController {
 
 
 
-    // Liste des fiches de paie
-
     @GetMapping
     public ResponseEntity<List<PayslipResponse>> getAllPayslips(){
 
@@ -62,11 +58,6 @@ public class PayslipController {
 
 
 
-
-
-
-
-    // Télécharger PDF
 
     @GetMapping("/download/{filename}")
     public ResponseEntity<Resource> downloadPdf(

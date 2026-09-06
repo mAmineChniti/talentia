@@ -89,7 +89,7 @@ public class PostService {
                 postRepository.save(post);
 
 
-        return convertToResponse(savedPost);
+        return convertToResponse(savedPost, null);
 
     }
 
@@ -101,12 +101,12 @@ public class PostService {
     // ==============================
 
 
-    public List<PostResponse> getAllPosts(){
+    public List<PostResponse> getAllPosts(Integer userId){
 
 
         return postRepository.findAll()
                 .stream()
-                .map(this::convertToResponse)
+                .map(post -> convertToResponse(post, userId))
                 .collect(Collectors.toList());
 
     }
@@ -119,7 +119,7 @@ public class PostService {
     // ==============================
 
 
-    public PostResponse getPostById(Long id){
+    public PostResponse getPostById(Long id, Integer userId){
 
 
         Post post =
@@ -132,7 +132,7 @@ public class PostService {
                         );
 
 
-        return convertToResponse(post);
+        return convertToResponse(post, userId);
 
     }
 
@@ -174,7 +174,7 @@ public class PostService {
                 postRepository.save(post);
 
 
-        return convertToResponse(updated);
+        return convertToResponse(updated, null);
 
     }
 
@@ -280,7 +280,7 @@ public class PostService {
 
 
 
-        return convertToResponse(post);
+        return convertToResponse(post, userId);
 
     }
 
@@ -322,7 +322,7 @@ public class PostService {
     // ==============================
 
 
-    private PostResponse convertToResponse(Post post){
+    private PostResponse convertToResponse(Post post, Integer userId){
 
 
         PostResponse response =
@@ -367,6 +367,16 @@ public class PostService {
         response.setNombreLikes(
                 post.getNombreLikes()
         );
+
+
+        if(userId != null){
+            response.setLikedByCurrentUser(
+                    likeRepository.findByUserIdAndPostId(
+                            userId,
+                            post.getId()
+                    ) != null
+            );
+        }
 
 
         return response;
