@@ -54,7 +54,8 @@ public class users {
 
 
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
 
 
@@ -69,7 +70,7 @@ public class users {
 
 
 
-    private Integer telephone;
+    private Long telephone;
 
 
 

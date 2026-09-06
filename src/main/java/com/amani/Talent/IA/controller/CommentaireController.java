@@ -47,12 +47,17 @@ public class CommentaireController {
 
 
 
+
+
     @GetMapping
     public List<Commentaire> getAll(){
 
         return commentaireService.getAllCommentaires();
 
     }
+
+
+
 
 
 
@@ -65,6 +70,8 @@ public class CommentaireController {
         return commentaireService.getCommentaireById(id);
 
     }
+
+
 
 
 
@@ -86,6 +93,7 @@ public class CommentaireController {
 
 
 
+
     @GetMapping("/user/{userId}")
     public List<Commentaire> getByUser(
             @PathVariable Integer userId){
@@ -94,6 +102,8 @@ public class CommentaireController {
         return commentaireService.getCommentairesByUser(userId);
 
     }
+
+
 
 
 
@@ -112,6 +122,8 @@ public class CommentaireController {
         );
 
     }
+
+
 
 
 

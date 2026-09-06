@@ -1,5 +1,6 @@
 package com.amani.Talent.IA.dto;
 
+import com.amani.Talent.IA.entity.Role;
 import lombok.Data;
 
 
@@ -13,7 +14,7 @@ public class LoginResponse {
 
     private String email;
 
-    private String role;
+    private Role role;
 
     private String message;
 

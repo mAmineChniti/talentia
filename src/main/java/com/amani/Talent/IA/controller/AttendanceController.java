@@ -32,8 +32,6 @@ public class AttendanceController {
 
 
 
-// Recherche par ID
-
     @GetMapping("/{id}")
     public Attendance getById(
             @PathVariable Integer id
@@ -44,8 +42,6 @@ public class AttendanceController {
     }
 
 
-
-// Historique employé
 
     @GetMapping("/employee/{employeeId}")
     public List<Attendance> employee(
@@ -58,8 +54,6 @@ public class AttendanceController {
 
 
 
-// Recherche par date
-
     @GetMapping("/date/{date}")
     public List<Attendance> date(
             @PathVariable LocalDate date
@@ -70,8 +64,6 @@ public class AttendanceController {
     }
 
 
-
-// Supprimer
 
     @DeleteMapping("/{id}")
     public String delete(

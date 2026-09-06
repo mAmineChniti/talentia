@@ -36,4 +36,7 @@ public class PostResponse {
     private int nombreLikes;
 
 
+    private boolean likedByCurrentUser;
+
+
 }

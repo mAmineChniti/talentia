@@ -29,8 +29,6 @@ public class AuthController {
 
 
 
-    // LOGIN
-
     @PostMapping("/login")
     public LoginResponse login(
 
@@ -45,8 +43,6 @@ public class AuthController {
                 authService.login(request);
 
 
-
-        // sauvegarder utilisateur connecté
 
         session.setAttribute(
                 "userId",
@@ -75,7 +71,6 @@ public class AuthController {
 
 
 
-    // LOGOUT
 
     @PostMapping("/logout")
     public String logout(
@@ -94,7 +89,6 @@ public class AuthController {
 
 
 
-    // USER CONNECTE
 
     @GetMapping("/me")
     public Object currentUser(

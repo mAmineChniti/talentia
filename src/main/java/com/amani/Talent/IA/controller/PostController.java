@@ -6,6 +6,8 @@ import com.amani.Talent.IA.dto.PostResponse;
 
 import com.amani.Talent.IA.service.PostService;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.web.bind.annotation.*;
 
 
@@ -35,11 +37,6 @@ public class PostController {
 
 
 
-
-    // ==========================
-    // Ajouter un post
-    // ==========================
-
     @PostMapping
     public PostResponse createPost(
 
@@ -54,45 +51,36 @@ public class PostController {
 
 
 
-
-    // ==========================
-    // Afficher tous les posts
-    // ==========================
-
     @GetMapping
-    public List<PostResponse> getAllPosts(){
+    public List<PostResponse> getAllPosts(
+            HttpSession session
+    ){
 
+        Integer userId = (Integer) session.getAttribute("userId");
 
-        return postService.getAllPosts();
+        return postService.getAllPosts(userId);
 
     }
 
 
 
-
-
-    // ==========================
-    // Afficher post par id
-    // ==========================
 
     @GetMapping("/{id}")
     public PostResponse getPostById(
 
-            @PathVariable Long id
+            @PathVariable Long id,
+            HttpSession session
 
     ){
 
-        return postService.getPostById(id);
+        Integer userId = (Integer) session.getAttribute("userId");
+
+        return postService.getPostById(id, userId);
 
     }
 
 
 
-
-
-    // ==========================
-    // Modifier un post
-    // ==========================
 
     @PutMapping("/{id}")
     public PostResponse updatePost(
@@ -113,11 +101,6 @@ public class PostController {
 
 
 
-
-    // ==========================
-    // Supprimer un post
-    // ==========================
-
     @DeleteMapping("/{id}")
     public String deletePost(
 
@@ -134,11 +117,6 @@ public class PostController {
 
 
 
-
-
-    // ==========================
-    // Like / Unlike
-    // ==========================
 
     @PostMapping("/{postId}/like/{userId}")
     public PostResponse likePost(
@@ -159,11 +137,6 @@ public class PostController {
 
 
 
-
-
-    // ==========================
-    // Nombre de likes
-    // ==========================
 
     @GetMapping("/{postId}/likes/count")
     public int countLikes(

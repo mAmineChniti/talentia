@@ -6,6 +6,7 @@ import com.amani.Talent.IA.dto.InterviewRequest;
 import com.amani.Talent.IA.dto.InterviewResponse;
 
 import com.amani.Talent.IA.entity.Application;
+import com.amani.Talent.IA.entity.ApplicationStatus;
 import com.amani.Talent.IA.entity.Interview;
 
 import com.amani.Talent.IA.repository.ApplicationRepository;
@@ -14,9 +15,6 @@ import com.amani.Talent.IA.repository.InterviewRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
-
-
-import java.util.UUID;
 
 
 
@@ -57,6 +55,48 @@ public class InterviewService {
 
 
 
+        // Vérifier le statut de la candidature
+        ApplicationStatus appStatus =
+                application.getStatus();
+
+
+        if(appStatus == ApplicationStatus.ACCEPTED
+                || appStatus == ApplicationStatus.REJECTED){
+
+            throw new RuntimeException(
+                    "Impossible de planifier un entretien pour une candidature "
+                            + appStatus
+            );
+
+        }
+
+
+        // Vérifier qu'il n'y a pas déjà un entretien en attente
+        List<Interview> existingInterviews =
+                interviewRepository.findByApplicationId(
+                        application.getId().intValue()
+                );
+
+
+        boolean hasPendingInterview =
+                existingInterviews.stream()
+                        .anyMatch(
+                                i -> i.getStatus().equals("PLANNED")
+                                        || i.getStatus().equals("CONFIRMED")
+                        );
+
+
+        if(hasPendingInterview){
+
+            throw new RuntimeException(
+                    "Un entretien est déjà planifié pour cette candidature"
+            );
+
+        }
+
+
+
+
         Interview interview = new Interview();
 
 
@@ -80,7 +120,7 @@ public class InterviewService {
 
         /*
            Si entretien en ligne
-           génération automatique du lien
+           génération automatique du lien unique
         */
 
         if(request.getType()
@@ -88,7 +128,7 @@ public class InterviewService {
 
 
             interview.setMeetingLink(
-                    generateMeetingLink()
+                    generateMeetingLink(application)
             );
 
 
@@ -124,6 +164,28 @@ public class InterviewService {
 
 
 
+
+        // Avancer le statut de la candidature
+        if(appStatus == ApplicationStatus.PENDING){
+
+            application.setStatus(
+                    ApplicationStatus.HR_INTERVIEW
+            );
+
+        }
+        else if(appStatus == ApplicationStatus.HR_INTERVIEW){
+
+            application.setStatus(
+                    ApplicationStatus.TECHNICAL_INTERVIEW
+            );
+
+        }
+
+
+        applicationRepository.save(application);
+
+
+
         Interview saved =
                 interviewRepository.save(interview);
 
@@ -150,13 +212,28 @@ public class InterviewService {
 
 
     /*
-       Génération lien réunion
+       Génération lien Jitsi Meet unique
+       par candidat et par candidature
     */
 
-    private String generateMeetingLink(){
+    private String generateMeetingLink(Application application){
 
 
-        return "https://meet.google.com/ciq-jexc-ppb";
+        Long candidateId =
+                application.getCandidate().getId();
+
+        Long applicationId =
+                application.getId();
+
+
+        String room =
+                "TalentAI-C"
+                        + candidateId
+                        + "-A"
+                        + applicationId;
+
+
+        return "https://meet.jit.si/" + room;
 
 
 
@@ -220,7 +297,7 @@ public class InterviewService {
                             +
                             "\n\n"
                             +
-                            "Lien Google Meet : "
+                            "Lien Jitsi Meet : "
                             +
                             interview.getMeetingLink()
                             +
@@ -417,7 +494,7 @@ public class InterviewService {
 
 
             interview.setMeetingLink(
-                    generateMeetingLink()
+                    generateMeetingLink(interview.getApplication())
             );
 
 
@@ -488,6 +565,27 @@ public class InterviewService {
 
 
         interviewRepository.save(interview);
+
+
+
+
+        // Avancer le statut de la candidature
+        Application application =
+                interview.getApplication();
+
+        ApplicationStatus appStatus =
+                application.getStatus();
+
+
+        if(appStatus == ApplicationStatus.TECHNICAL_INTERVIEW){
+
+            application.setStatus(
+                    ApplicationStatus.ACCEPTED
+            );
+
+            applicationRepository.save(application);
+
+        }
 
     }
 
