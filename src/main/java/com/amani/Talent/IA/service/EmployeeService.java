@@ -33,6 +33,7 @@ public class EmployeeService {
 
     private final UsersRepository usersRepository;
     private final QrCodeService qrCodeService;
+    private final EmailService emailService;
 
 
 
@@ -128,7 +129,20 @@ public class EmployeeService {
         Employee saved =
                 employeeRepository.save(employee);
 
+        String employeeName =
+                (user.getName() == null ? "" : user.getName())
+                        + " "
+                        + (user.getLastname() == null ? ""
+                        : user.getLastname());
 
+        emailService.sendWelcomeEmail(
+                user.getEmail(),
+                employeeName.trim(),
+                saved.getEmployeeCode(),
+                saved.getDepartment(),
+                saved.getPosition(),
+                saved.getQrImageUrl()
+        );
 
         return convert(saved);
 

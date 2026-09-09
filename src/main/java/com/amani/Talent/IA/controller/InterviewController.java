@@ -106,7 +106,7 @@ public class InterviewController {
 
 <meta charset="UTF-8">
 
-<title>Confirmation - Talent AI</title>
+<title>Confirmation - TalentIA</title>
 
 
 <style>
@@ -396,14 +396,14 @@ color:#64748b;
 
 <div class="logo">
 
-🚀 Talent AI
+🚀 TalentIA
 
 </div>
 
 
 <div class="subtitle">
 
-Plateforme intelligente RH
+Plateforme intelligente de recrutement
 
 </div>
 
@@ -444,7 +444,7 @@ Votre présence à l'entretien a été enregistrée.
 <p>
 
 Merci pour votre intérêt envers 
-<b>Talent AI</b>.
+<b>TalentIA</b>.
 
 </p>
 
@@ -466,7 +466,7 @@ Confirmation enregistrée
 <div class="row">
 
 💼 <b>Service :</b>
-RH Talent AI
+RH TalentIA
 
 </div>
 
@@ -500,7 +500,7 @@ Entretien RH
 
 <a class="button" href="#">
 
-Retour Talent AI
+Retour TalentIA
 
 </a>
 
@@ -514,7 +514,7 @@ Retour Talent AI
 
 <div class="footer">
 
-© 2026 Talent AI - Recrutement intelligent
+© %d TalentIA - Solution intelligente de gestion des talents
 
 </div>
 
@@ -529,7 +529,8 @@ Retour Talent AI
 
 </html>
 
-""";
+"""
+                .formatted(java.time.LocalDate.now().getYear());
     }
 
 

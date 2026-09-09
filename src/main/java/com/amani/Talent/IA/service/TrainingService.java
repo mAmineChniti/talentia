@@ -35,6 +35,8 @@ public class TrainingService {
 
     private final TrainingEnrollmentRepository enrollmentRepository;
 
+    private final PostRepository postRepository;
+
 
 
 // ============================
@@ -124,6 +126,16 @@ public class TrainingService {
 
     public void delete(Long id){
 
+        Training training = getById(id);
+
+        // Delete linked Post if exists
+        if(training.getPost() != null){
+            Post post = training.getPost();
+            post.setTraining(null);
+            postRepository.save(post);
+        }
+
+        enrollmentRepository.deleteAllByTrainingId(id);
         trainingRepository.deleteById(id);
 
     }
@@ -131,20 +143,17 @@ public class TrainingService {
 
 
 // ============================
-// INSCRIPTION EMPLOYEE
+// ENROLL EMPLOYEE (HR/Admin direct)
 // ============================
 
 
     public TrainingEnrollment enrollEmployee(
             Long trainingId,
-            Integer employeeId
+            Integer employeeId,
+            String status
     ){
 
-
-        Training training =
-                getById(trainingId);
-
-
+        Training training = getById(trainingId);
 
         Employee employee =
                 employeeRepository.findById(employeeId)
@@ -152,41 +161,26 @@ public class TrainingService {
                                 ()->new RuntimeException("Employé introuvable")
                         );
 
-
+        // Duplicate check
+        if(enrollmentRepository.existsByTrainingIdAndEmployeeId(
+                trainingId, employeeId)){
+            throw new RuntimeException("Cet employé est déjà inscrit à cette formation");
+        }
 
         long total =
                 enrollmentRepository.countByTrainingId(trainingId);
 
-
-
         if(total >= training.getCapacity()){
-
-            throw new RuntimeException(
-                    "Capacité maximale atteinte"
-            );
-
+            throw new RuntimeException("Capacité maximale atteinte");
         }
 
-
-
-        TrainingEnrollment enrollment =
-                new TrainingEnrollment();
-
-
+        TrainingEnrollment enrollment = new TrainingEnrollment();
         enrollment.setTraining(training);
-
         enrollment.setEmployee(employee);
-
-        enrollment.setEnrollmentDate(
-                LocalDate.now()
-        );
-
-
-        enrollment.setStatus("REGISTERED");
-
+        enrollment.setEnrollmentDate(LocalDate.now());
+        enrollment.setStatus(status != null ? status : "REGISTERED");
 
         return enrollmentRepository.save(enrollment);
-
 
     }
 
@@ -231,6 +225,56 @@ public class TrainingService {
 
         return enrollmentRepository
                 .findByEmployeeId(employeeId);
+
+    }
+
+
+
+// ============================
+// GET ENROLLMENTS BY TRAINING
+// ============================
+
+
+    public List<TrainingEnrollment> getEnrollmentsByTraining(Long trainingId){
+
+        return enrollmentRepository.findByTrainingId(trainingId);
+
+    }
+
+
+
+// ============================
+// UPDATE ENROLLMENT STATUS
+// ============================
+
+
+    public TrainingEnrollment updateEnrollmentStatus(
+            Long enrollmentId,
+            String status
+    ){
+
+        TrainingEnrollment enrollment =
+                enrollmentRepository.findById(enrollmentId)
+                        .orElseThrow(
+                                ()->new RuntimeException("Inscription introuvable")
+                        );
+
+        enrollment.setStatus(status);
+
+        return enrollmentRepository.save(enrollment);
+
+    }
+
+
+
+// ============================
+// REMOVE ENROLLMENT
+// ============================
+
+
+    public void removeEnrollment(Long enrollmentId){
+
+        enrollmentRepository.deleteById(enrollmentId);
 
     }
 

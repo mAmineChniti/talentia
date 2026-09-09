@@ -38,5 +38,14 @@ public class PostResponse {
 
     private boolean likedByCurrentUser;
 
+    // Training info (only set for FORMATION posts)
+    private Long trainingId;
+    private String trainingTitle;
+    private String trainingTrainer;
+    private String trainingLocation;
+    private Integer trainingCapacity;
+    private Long trainingEnrollmentCount;
+    private String trainingStatus;
+
 
 }

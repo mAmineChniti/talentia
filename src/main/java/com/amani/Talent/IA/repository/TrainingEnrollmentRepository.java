@@ -15,4 +15,10 @@ public interface TrainingEnrollmentRepository
 
     List<TrainingEnrollment> findByEmployeeId(Long employeeId);
 
+    List<TrainingEnrollment> findByTrainingId(Long trainingId);
+
+    boolean existsByTrainingIdAndEmployeeId(Long trainingId, Integer employeeId);
+
+    void deleteAllByTrainingId(Long trainingId);
+
 }
