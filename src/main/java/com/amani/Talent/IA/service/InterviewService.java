@@ -305,7 +305,7 @@ public class InterviewService {
                             +
                             "Cordialement,\n"
                             +
-                            "Equipe RH Talent AI";
+                            "Equipe RH TalentIA";
 
 
         }
@@ -337,7 +337,7 @@ public class InterviewService {
                             +
                             "Cordialement,\n"
                             +
-                            "Equipe RH Talent AI";
+                            "Equipe RH TalentIA";
 
 
         }

@@ -534,66 +534,66 @@ public class ApplicationService {
 
             case HR_INTERVIEW -> {
 
-                subject = "Entretien RH planifié - Talent AI";
+                subject = "Entretien RH planifié - TalentIA";
 
                 body =
                         "Bonjour " + name + ",\n\n"
                                 + "Votre candidature a été acceptée pour un entretien RH.\n\n"
                                 + "Un entretien va être planifié prochainement.\n\n"
-                                + "Cordialement,\nEquipe RH Talent AI";
+                                + "Cordialement,\nEquipe RH TalentIA";
 
             }
 
 
             case TECHNICAL_INTERVIEW -> {
 
-                subject = "Entretien technique planifié - Talent AI";
+                subject = "Entretien technique planifié - TalentIA";
 
                 body =
                         "Bonjour " + name + ",\n\n"
                                 + "Félicitations ! Vous avez été sélectionné pour un entretien technique.\n\n"
                                 + "Un entretien technique va être planifié prochainement.\n\n"
-                                + "Cordialement,\nEquipe RH Talent AI";
+                                + "Cordialement,\nEquipe RH TalentIA";
 
             }
 
 
             case ACCEPTED -> {
 
-                subject = "Candidature acceptée - Talent AI";
+                subject = "Candidature acceptée - TalentIA";
 
                 body =
                         "Bonjour " + name + ",\n\n"
                                 + "Nous avons le plaisir de vous informer que votre candidature a été acceptée !\n\n"
                                 + "Vous allez recevoir les prochaines étapes pour finaliser votre intégration.\n\n"
                                 + "Bienvenue dans l'équipe !\n\n"
-                                + "Cordialement,\nEquipe RH Talent AI";
+                                + "Cordialement,\nEquipe RH TalentIA";
 
             }
 
 
             case REJECTED -> {
 
-                subject = "Candidature non retenue - Talent AI";
+                subject = "Candidature non retenue - TalentIA";
 
                 body =
                         "Bonjour " + name + ",\n\n"
                                 + "Nous avons le regret de vous informer que votre candidature n'a pas été retenue.\n\n"
                                 + "Nous vous encourageons à postuler à d'autres offres.\n\n"
-                                + "Cordialement,\nEquipe RH Talent AI";
+                                + "Cordialement,\nEquipe RH TalentIA";
 
             }
 
 
             default -> {
 
-                subject = "Mise à jour de votre candidature - Talent AI";
+                subject = "Mise à jour de votre candidature - TalentIA";
 
                 body =
                         "Bonjour " + name + ",\n\n"
                                 + "Le statut de votre candidature a été mis à jour : "
                                 + newStatus + "\n\n"
-                                + "Cordialement,\nEquipe RH Talent AI";
+                                + "Cordialement,\nEquipe RH TalentIA";
 
             }
 

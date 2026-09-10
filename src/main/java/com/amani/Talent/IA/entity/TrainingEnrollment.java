@@ -37,9 +37,7 @@ public class TrainingEnrollment {
 
 
     private String status;
-    // REGISTERED
-    // COMPLETED
-    // FAILED
+    // PENDING, APPROVED, REGISTERED, COMPLETED, FAILED, REJECTED, CANCELLED
 
 
 

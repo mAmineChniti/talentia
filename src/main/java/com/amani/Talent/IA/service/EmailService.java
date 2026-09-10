@@ -50,7 +50,7 @@ public class EmailService {
                     );
             helper.setFrom(
                     "amaniyahyaoui20@gmail.com",
-                    "Talent AI"
+                    "TalentIA"
             );
 
 
@@ -130,6 +130,12 @@ public class EmailService {
 
 
 
+            helper.setFrom(
+                    "amaniyahyaoui20@gmail.com",
+                    "TalentIA"
+            );
+
+
 
 
             helper.setTo(to);
@@ -137,7 +143,7 @@ public class EmailService {
 
 
             helper.setSubject(
-                    "Convocation entretien - Talent AI"
+                    "Convocation entretien - TalentIA"
             );
 
 
@@ -272,7 +278,7 @@ font-size:32px;
 
 ">
 
-🚀 Talent AI
+🚀 TalentIA
 
 </h1>
 
@@ -353,7 +359,7 @@ color:#475569;
 
 Cet entretien représente une étape importante
 dans votre processus de recrutement chez
-<b>Talent AI</b>.
+<b>TalentIA</b>.
 
 </p>
 
@@ -542,7 +548,7 @@ L'équipe RH
 
 <br>
 
-Talent AI
+TalentIA
 
 </b>
 
@@ -581,7 +587,7 @@ font-size:13px;
 ">
 
 
-© 2026 Talent AI
+© %d TalentIA
 
 <br>
 
@@ -632,7 +638,9 @@ Solution intelligente de gestion des talents
 
                             actionButton,
 
-                            interviewId
+                            interviewId,
+
+                            java.time.LocalDate.now().getYear()
 
                     );
 
@@ -685,11 +693,14 @@ Solution intelligente de gestion des talents
     ){
 
 
+
         try {
+
 
 
             MimeMessage message =
                     mailSender.createMimeMessage();
+
 
 
 
@@ -702,9 +713,10 @@ Solution intelligente de gestion des talents
 
 
 
+
             helper.setFrom(
                     "amaniyahyaoui20@gmail.com",
-                    "Talent AI"
+                    "TalentIA"
             );
 
 
@@ -714,7 +726,7 @@ Solution intelligente de gestion des talents
 
 
             helper.setSubject(
-                    "Réinitialisation de votre mot de passe - Talent AI"
+                    "Réinitialisation de votre mot de passe - TalentIA"
             );
 
 
@@ -733,86 +745,145 @@ Solution intelligente de gestion des talents
 </head>
 
 
+
 <body style="
+
+margin:0;
+
+padding:0;
+
 background:#f1f5f9;
-font-family:Arial,sans-serif;
-padding:30px;
+
+font-family:'Segoe UI',Arial,sans-serif;
+
 ">
 
 
 
 <div style="
-max-width:600px;
+
+padding:40px 10px;
+
+">
+
+
+
+<div style="
+
+max-width:650px;
+
 margin:auto;
+
 background:white;
-border-radius:15px;
-padding:30px;
-box-shadow:0 5px 20px rgba(0,0,0,0.1);
+
+border-radius:20px;
+
+overflow:hidden;
+
+box-shadow:0 10px 30px rgba(0,0,0,0.1);
+
 ">
 
 
 
-<h1 style="
-color:#2563eb;
+<!-- HEADER -->
+
+<div style="
+
+background:linear-gradient(135deg,#2563eb,#7c3aed);
+
+padding:40px;
+
 text-align:center;
+
+color:white;
+
 ">
 
-🚀 Talent AI
+<h1 style="margin:0;font-size:32px;">🚀 TalentIA</h1>
 
-</h1>
+<p style="margin-top:10px;font-size:16px;">Réinitialisation de mot de passe</p>
+
+</div>
 
 
 
-<h2>
-Bonjour %s 👋
-</h2>
+<!-- CONTENT -->
+
+<div style="padding:35px;">
+
+<h2 style="color:#1e293b;">Bonjour %s 👋</h2>
 
 
 
 <p style="
+
 font-size:16px;
+
+line-height:1.6;
+
 color:#475569;
+
 ">
 
 Vous avez demandé la réinitialisation de votre
+
 mot de passe.
 
 </p>
 
 
 
+<!-- CODE CARD -->
 
 <div style="
+
 background:#eff6ff;
-padding:20px;
-border-radius:10px;
-text-align:center;
+
+border-radius:15px;
+
+padding:25px;
+
 margin:25px 0;
+
+text-align:center;
+
+border:1px solid #bfdbfe;
+
 ">
 
+<p style="font-size:16px;color:#1e293b;margin-bottom:10px;">
 
-<p>
 Votre code de réinitialisation :
+
 </p>
 
-
 <h2 style="
+
 color:#2563eb;
+
+margin:0;
+
+font-size:28px;
+
+letter-spacing:5px;
+
 ">
 
 %s
 
 </h2>
 
-
 </div>
 
 
 
-
-
 <p style="
+
 color:#475569;
+
+font-size:15px;
+
 ">
 
 Ce code est valable pendant 15 minutes.
@@ -821,28 +892,40 @@ Ce code est valable pendant 15 minutes.
 
 
 
+<p style="
 
-<p>
+color:#475569;
+
+font-size:15px;
+
+">
 
 Si vous n'avez pas demandé cette modification,
+
 ignorez cet email.
 
 </p>
 
 
 
-
 <br>
+
 
 
 <p>
 
 Cordialement,
 
-<br>
+<br><br>
 
 <b>
-L'équipe Talent AI
+
+L'équipe RH
+
+<br>
+
+TalentIA
+
 </b>
 
 </p>
@@ -852,15 +935,48 @@ L'équipe Talent AI
 </div>
 
 
+
+<!-- FOOTER -->
+
+<div style="
+
+background:#f8fafc;
+
+padding:25px;
+
+text-align:center;
+
+color:#64748b;
+
+font-size:13px;
+
+">
+
+© %d TalentIA
+
+<br>
+
+Solution intelligente de gestion des talents
+
+</div>
+
+
+
+</div>
+
+</div>
+
+
+
 </body>
 
 </html>
 
-
 """
                     .formatted(
                             userName,
-                            token
+                            token,
+                            java.time.LocalDate.now().getYear()
                     );
 
 
@@ -893,6 +1009,178 @@ L'équipe Talent AI
 
     }
 
+    // ==================================================
+    // Email bienvenue employé + QR Code
+    // ==================================================
 
+    public void sendWelcomeEmail(
+            String to,
+            String employeeName,
+            String employeeCode,
+            String department,
+            String position,
+            String qrImageUrl
+    ) {
+        try {
+            MimeMessage message =
+                    mailSender.createMimeMessage();
+
+            MimeMessageHelper helper =
+                    new MimeMessageHelper(
+                            message,
+                            true,
+                            "UTF-8"
+                    );
+
+            helper.setFrom(
+                    "amaniyahyaoui20@gmail.com",
+                    "TalentIA"
+            );
+
+            helper.setTo(to);
+
+            helper.setSubject(
+                    "Bienvenue chez TalentIA - Votre QR Code de présence"
+            );
+
+            String html = """
+            <!DOCTYPE html>
+            <html>
+            <head>
+            <meta charset="UTF-8">
+            </head>
+            <body style="
+            margin:0;
+            padding:0;
+            background:#f1f5f9;
+            font-family:'Segoe UI',Arial,sans-serif;
+            ">
+            <div style="padding:40px 10px;">
+            <div style="
+            max-width:650px;
+            margin:auto;
+            background:white;
+            border-radius:20px;
+            overflow:hidden;
+            box-shadow:0 10px 30px rgba(0,0,0,0.1);
+            ">
+            <!-- HEADER -->
+            <div style="
+            background:linear-gradient(135deg,#2563eb,#7c3aed);
+            padding:40px;
+            text-align:center;
+            color:white;
+            ">
+            <h1 style="margin:0;font-size:32px;">🚀 TalentIA</h1>
+            <p style="margin-top:10px;font-size:16px;">Bienvenue dans l'équipe !</p>
+            </div>
+
+            <!-- CONTENT -->
+            <div style="padding:35px;">
+            <h2 style="color:#1e293b;">Bonjour %s 👋</h2>
+
+            <p style="font-size:16px;line-height:1.6;color:#475569;">
+            Nous avons le plaisir de vous confirmer votre embauche
+            chez <b>TalentIA</b>. Vous faites désormais partie de l'équipe !
+            </p>
+
+            <!-- INFO CARD -->
+            <div style="
+            background:#f8fafc;
+            border-radius:15px;
+            padding:25px;
+            margin:25px 0;
+            border:1px solid #e2e8f0;
+            ">
+            <p>💼 <b>Matricule :</b> %s</p>
+            <p>🏢 <b>Département :</b> %s</p>
+            <p>📌 <b>Poste :</b> %s</p>
+            </div>
+
+            <!-- QR CODE -->
+            <div style="
+            background:#eff6ff;
+            border-radius:15px;
+            padding:30px;
+            margin:25px 0;
+            text-align:center;
+            border:1px solid #bfdbfe;
+            ">
+            <p style="font-size:16px;color:#1e293b;margin-bottom:15px;">
+            📱 <b>Votre QR Code de présence</b>
+            </p>
+            <p style="font-size:14px;color:#475569;margin-bottom:20px;">
+            Présentez ce code à l'accueil pour pointer votre présence.
+            </p>
+            <img src="%s"
+            alt="QR Code de présence"
+            style="
+            width:200px;
+            height:200px;
+            border-radius:15px;
+            border:2px solid #e2e8f0;
+            " />
+            <p style="font-size:13px;color:#64748b;margin-top:15px;">
+            Code : %s
+            </p>
+            </div>
+
+            <p style="color:#475569;font-size:15px;">
+            Conservez ce QR code précieusement. Il vous servira
+            à pointer votre entrée et votre sortie quotidienne.
+            </p>
+
+            <br>
+
+            <p style="color:#475569;font-size:15px;">
+            Si vous avez des questions, notre équipe RH reste à votre disposition.
+            </p>
+
+            <br>
+
+            <p>
+            Cordialement,<br><br>
+            <b>L'équipe RH<br>TalentIA</b>
+            </p>
+            </div>
+
+            <!-- FOOTER -->
+            <div style="
+            background:#f8fafc;
+            padding:25px;
+            text-align:center;
+            color:#64748b;
+            font-size:13px;
+            ">
+            © %d TalentIA<br>
+            Solution intelligente de gestion des talents
+            </div>
+            </div>
+            </div>
+            </body>
+            </html>
+            """
+                    .formatted(
+                            employeeName,
+                            employeeCode,
+                            department == null ? "-" : department,
+                            position == null ? "-" : position,
+                            qrImageUrl,
+                            employeeCode,
+                            java.time.LocalDate.now().getYear()
+                    );
+
+            helper.setText(html, true);
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Erreur envoi email bienvenue : "
+                            + e.getMessage()
+            );
+    }
+
+}
 
 }

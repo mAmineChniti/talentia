@@ -6,10 +6,14 @@ import com.amani.Talent.IA.dto.PostResponse;
 
 import com.amani.Talent.IA.entity.Like;
 import com.amani.Talent.IA.entity.Post;
+import com.amani.Talent.IA.entity.Training;
+import com.amani.Talent.IA.entity.TypePost;
 import com.amani.Talent.IA.entity.users;
 
 import com.amani.Talent.IA.repository.LikeRepository;
 import com.amani.Talent.IA.repository.PostRepository;
+import com.amani.Talent.IA.repository.TrainingEnrollmentRepository;
+import com.amani.Talent.IA.repository.TrainingRepository;
 import com.amani.Talent.IA.repository.UsersRepository;
 
 import org.springframework.stereotype.Service;
@@ -30,17 +34,25 @@ public class PostService {
 
     private final LikeRepository likeRepository;
 
+    private final TrainingRepository trainingRepository;
+
+    private final TrainingEnrollmentRepository enrollmentRepository;
+
 
 
     public PostService(
             PostRepository postRepository,
             UsersRepository usersRepository,
-            LikeRepository likeRepository
+            LikeRepository likeRepository,
+            TrainingRepository trainingRepository,
+            TrainingEnrollmentRepository enrollmentRepository
     ){
 
         this.postRepository = postRepository;
         this.usersRepository = usersRepository;
         this.likeRepository = likeRepository;
+        this.trainingRepository = trainingRepository;
+        this.enrollmentRepository = enrollmentRepository;
 
     }
 
@@ -83,6 +95,55 @@ public class PostService {
         post.setDateCreation(
                 LocalDateTime.now()
         );
+
+
+        // If FORMATION, link to existing training or create one
+        if(request.getTypePost() == TypePost.FORMATION){
+
+            Training savedTraining;
+
+            if(request.getTrainingId() != null){
+                savedTraining = trainingRepository.findById(
+                        request.getTrainingId()
+                ).orElseThrow(
+                        () -> new RuntimeException("Formation introuvable")
+                );
+            } else {
+                Training training = new Training();
+                training.setTitle(
+                        request.getTrainingTitle() != null
+                                ? request.getTrainingTitle()
+                                : request.getContenu()
+                );
+                training.setDescription(
+                        request.getTrainingDescription() != null
+                                ? request.getTrainingDescription()
+                                : request.getContenu()
+                );
+                training.setTrainer(
+                        request.getTrainer() != null
+                                ? request.getTrainer()
+                                : ""
+                );
+                training.setLocation(
+                        request.getTrainingLocation() != null
+                                ? request.getTrainingLocation()
+                                : ""
+                );
+                training.setStartDate(request.getTrainingStartDate());
+                training.setEndDate(request.getTrainingEndDate());
+                training.setCapacity(
+                        request.getTrainingCapacity() != null
+                                ? request.getTrainingCapacity()
+                                : 20
+                );
+                training.setStatus("PLANNED");
+                savedTraining = trainingRepository.save(training);
+            }
+
+            post.setTraining(savedTraining);
+
+        }
 
 
         Post savedPost =
@@ -181,7 +242,6 @@ public class PostService {
 
 
 
-
     // ==============================
     // DELETE POST
     // ==============================
@@ -199,11 +259,20 @@ public class PostService {
                                 )
                         );
 
+        // If FORMATION post with linked Training, delete enrollments first
+        if(post.getTraining() != null){
+            enrollmentRepository.deleteAllByTrainingId(
+                    post.getTraining().getId()
+            );
+            trainingRepository.deleteById(
+                    post.getTraining().getId()
+            );
+        }
+
 
         postRepository.delete(post);
 
     }
-
 
 
 
@@ -287,7 +356,6 @@ public class PostService {
 
 
 
-
     // ==============================
     // COUNT LIKES
     // ==============================
@@ -311,8 +379,6 @@ public class PostService {
                 post.getLikes().size();
 
     }
-
-
 
 
 
@@ -375,6 +441,20 @@ public class PostService {
                             userId,
                             post.getId()
                     ) != null
+            );
+        }
+
+        // Training info for FORMATION posts
+        if(post.getTraining() != null){
+            Training t = post.getTraining();
+            response.setTrainingId(t.getId());
+            response.setTrainingTitle(t.getTitle());
+            response.setTrainingTrainer(t.getTrainer());
+            response.setTrainingLocation(t.getLocation());
+            response.setTrainingCapacity(t.getCapacity());
+            response.setTrainingStatus(t.getStatus());
+            response.setTrainingEnrollmentCount(
+                    enrollmentRepository.countByTrainingId(t.getId())
             );
         }
 

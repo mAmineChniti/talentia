@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 
 @RestController
@@ -69,15 +71,17 @@ public class TrainingController {
 
 
 
-    @PostMapping("/{trainingId}/employees/{employeeId}")
+    @PostMapping("/{trainingId}/employees/{employeeId}/{status}")
     public TrainingEnrollment enroll(
             @PathVariable Long trainingId,
-            @PathVariable Integer employeeId
+            @PathVariable Integer employeeId,
+            @PathVariable String status
     ){
 
         return service.enrollEmployee(
                 trainingId,
-                employeeId
+                employeeId,
+                status
         );
 
     }
@@ -94,12 +98,61 @@ public class TrainingController {
         return service.completeTraining(id,score);
 
     }
+
     @GetMapping("/employee/{employeeId}")
     public Object getByEmployee(
             @PathVariable Long employeeId
     ){
 
         return service.getTrainingByEmployee(employeeId);
+
+    }
+
+
+
+// ============================
+// ENROLLMENTS BY TRAINING
+// ============================
+
+    @GetMapping("/{trainingId}/enrollments")
+    public List<TrainingEnrollment> getEnrollmentsByTraining(
+            @PathVariable Long trainingId
+    ){
+
+        return service.getEnrollmentsByTraining(trainingId);
+
+    }
+
+
+
+// ============================
+// UPDATE ENROLLMENT STATUS
+// ============================
+
+    @PutMapping("/enrollments/{enrollmentId}/status")
+    public TrainingEnrollment updateEnrollmentStatus(
+            @PathVariable Long enrollmentId,
+            @RequestParam String status
+    ){
+
+        return service.updateEnrollmentStatus(enrollmentId, status);
+
+    }
+
+
+
+// ============================
+// REMOVE ENROLLMENT
+// ============================
+
+    @DeleteMapping("/enrollments/{enrollmentId}")
+    public String removeEnrollment(
+            @PathVariable Long enrollmentId
+    ){
+
+        service.removeEnrollment(enrollmentId);
+
+        return "Inscription supprimée";
 
     }
 

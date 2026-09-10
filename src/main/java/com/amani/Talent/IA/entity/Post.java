@@ -70,6 +70,12 @@ public class Post {
     @JsonIgnore
     @OneToMany(mappedBy = "post")
     private List<Application> applications = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "training_id")
+    @JsonIgnore
+    private Training training;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TypePost typePost;
