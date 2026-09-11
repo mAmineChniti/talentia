@@ -2,6 +2,9 @@ package com.amani.Talent.IA.service;
 
 
 import com.amani.Talent.IA.dto.DashboardResponse;
+import com.amani.Talent.IA.entity.Attendance;
+import com.amani.Talent.IA.entity.AttendanceStatus;
+import com.amani.Talent.IA.entity.LeaveStatus;
 import com.amani.Talent.IA.repository.*;
 
 import lombok.RequiredArgsConstructor;
@@ -10,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 
 
 @Service
@@ -28,6 +33,10 @@ public class DashboardService {
     private final ContractRepository contractRepository;
 
     private final PayrollRepository payrollRepository;
+
+    private final AttendanceRepository attendanceRepository;
+
+    private final LeaveRepository leaveRepository;
 
 
 
@@ -165,6 +174,58 @@ public class DashboardService {
         response.setAiRecommendation(
                 "Les employés IT ont une excellente performance. " +
                         "Améliorer la ponctualité du département Marketing."
+        );
+
+
+
+        /*
+        =====================
+        ATTENDANCE TODAY
+        =====================
+        */
+
+
+        LocalDate today = LocalDate.now();
+
+        List<Attendance> todayRecords =
+                attendanceRepository.findByDate(today);
+
+        long presentToday = todayRecords.stream()
+                .filter(a -> a.getStatus() == AttendanceStatus.PRESENT)
+                .count();
+
+        long lateToday = todayRecords.stream()
+                .filter(a -> a.getStatus() == AttendanceStatus.RETARD)
+                .count();
+
+        long absentToday = Math.max(
+                activeEmployees - presentToday - lateToday,
+                0
+        );
+
+        response.setPresentToday(presentToday);
+        response.setLateToday(lateToday);
+        response.setAbsentToday(absentToday);
+
+
+
+        /*
+        =====================
+        LEAVES
+        =====================
+        */
+
+
+        response.setPendingLeaves(
+                (long) leaveRepository.findByStatus(LeaveStatus.PENDING).size()
+        );
+
+        response.setApprovedLeaves(
+                (long) leaveRepository.findByStatus(LeaveStatus.APPROVED).size()
+        );
+
+        response.setRejectedLeaves(
+                (long) leaveRepository.findByStatus(LeaveStatus.REJECTED).size()
         );
 
 

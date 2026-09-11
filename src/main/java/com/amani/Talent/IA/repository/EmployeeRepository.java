@@ -6,6 +6,7 @@ import com.amani.Talent.IA.entity.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -19,5 +20,6 @@ public interface EmployeeRepository
     Optional<Employee> findByUserId(Integer userId);
     Employee findByQrCode(String qrCode);
     long countByActiveTrue();
+    List<Employee> findByActiveTrue();
 
 }

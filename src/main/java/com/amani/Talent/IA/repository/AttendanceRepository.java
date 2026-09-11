@@ -18,7 +18,7 @@ public interface AttendanceRepository
     List<Attendance> findByDate(LocalDate date);
 
 
-    Attendance findByEmployee_IdAndDate(
+    List<Attendance> findByEmployee_IdAndDate(
             Integer employeeId,
             LocalDate date
     );

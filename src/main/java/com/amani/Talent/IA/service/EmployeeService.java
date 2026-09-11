@@ -188,6 +188,22 @@ public class EmployeeService {
     }
 
 
+    public EmployeeResponse getEmployeeByUserId(Integer userId){
+
+        Employee employee =
+                employeeRepository.findByUserId(userId)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Employé introuvable"
+                                )
+                        );
+
+
+        return convert(employee);
+
+    }
+
+
 
 
 
