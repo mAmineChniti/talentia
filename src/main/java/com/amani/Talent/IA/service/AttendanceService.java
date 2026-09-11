@@ -66,7 +66,7 @@ public class AttendanceService {
                         .findByEmployee_IdAndDate(
                                 employee.getId(),
                                 today
-                        );
+                        ).stream().findFirst().orElse(null);
 
 
 
@@ -74,15 +74,13 @@ public class AttendanceService {
         // PREMIER SCAN : ARRIVEE
         // ==========================
 
-        if(attendance == null){
+        if(attendance == null || attendance.getCheckIn() == null){
 
-
-            attendance = new Attendance();
-
-
-            attendance.setEmployee(employee);
-
-            attendance.setDate(today);
+            if(attendance == null){
+                attendance = new Attendance();
+                attendance.setEmployee(employee);
+                attendance.setDate(today);
+            }
 
             attendance.setCheckIn(now);
 
@@ -228,6 +226,26 @@ public class AttendanceService {
 
         return attendanceRepository
                 .findByEmployee_Id(employeeId);
+
+    }
+
+
+
+
+    // ==========================
+    // FIND BY EMPLOYEE AND DATE
+    // ==========================
+
+    public List<Attendance> getByEmployeeAndDate(
+            Integer employeeId,
+            LocalDate date
+    ){
+
+        return attendanceRepository
+                .findByEmployee_IdAndDate(
+                        employeeId,
+                        date
+                );
 
     }
 

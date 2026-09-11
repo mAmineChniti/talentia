@@ -62,6 +62,16 @@ public class EmployeeController {
     }
 
 
+    @GetMapping("/user/{userId}")
+    public EmployeeResponse getByUserId(
+            @PathVariable Integer userId
+    ){
+
+        return employeeService.getEmployeeByUserId(userId);
+
+    }
+
+
 
 
     @PutMapping("/{id}")

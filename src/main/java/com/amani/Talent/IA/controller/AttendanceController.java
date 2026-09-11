@@ -53,6 +53,20 @@ public class AttendanceController {
     }
 
 
+    @GetMapping("/employee/{employeeId}/date/{date}")
+    public List<Attendance> employeeByDate(
+            @PathVariable Integer employeeId,
+            @PathVariable LocalDate date
+    ){
+
+        return attendanceService.getByEmployeeAndDate(
+                employeeId,
+                date
+        );
+
+    }
+
+
 
     @GetMapping("/date/{date}")
     public List<Attendance> date(
