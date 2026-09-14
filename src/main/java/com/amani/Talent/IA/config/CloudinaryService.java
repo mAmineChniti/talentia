@@ -1,4 +1,4 @@
-package com.amani.Talent.IA.service;
+package com.amani.Talent.IA.config;
 
 
 import com.cloudinary.Cloudinary;

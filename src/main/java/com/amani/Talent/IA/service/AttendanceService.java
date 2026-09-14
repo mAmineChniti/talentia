@@ -322,8 +322,7 @@ public class AttendanceService {
                 );
 
 
-        System.out.println("Nombre attendance deduction : "
-                + attendances.size());
+        
 
 
 
@@ -443,9 +442,7 @@ public class AttendanceService {
 
 
 
-        System.out.println("Salaire : " + salary);
-        System.out.println("Tarif heure normale : " + hourlyRate);
-        System.out.println("Tarif heure sup : " + overtimeRate);
+        
 
 
 
@@ -481,14 +478,7 @@ public class AttendanceService {
 
 
 
-                System.out.println(
-                        "Date : "
-                                + attendance.getDate()
-                                + " Extra : "
-                                + extraHours
-                                + "h = "
-                                + amount
-                );
+                
 
             }
 

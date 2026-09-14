@@ -1,5 +1,6 @@
 package com.amani.Talent.IA.dto;
 
+import com.amani.Talent.IA.entity.ContractStatus;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -22,6 +23,6 @@ public class ContractResponse {
 
     private Integer workingHours;
 
-    private String status;
+    private ContractStatus status;
 
 }

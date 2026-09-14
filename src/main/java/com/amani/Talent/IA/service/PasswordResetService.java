@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDateTime;
@@ -44,6 +45,7 @@ public class PasswordResetService {
     // ==========================================
 
 
+    @Transactional
     public void forgotPassword(
             String email
     ){
@@ -65,6 +67,13 @@ public class PasswordResetService {
 
 
 
+
+        // Un seul token par utilisateur (contrainte unique sur user_id) :
+        // invalider l'ancien avant d'en créer un nouveau (cas "renvoyer").
+        // flush() obligatoire : Hibernate rejoue les INSERT avant les DELETE
+        // dans une même transaction, ce qui violerait la contrainte unique.
+        tokenRepository.deleteByUserId(user.getId());
+        tokenRepository.flush();
 
         // Génération token unique
 
@@ -145,6 +154,7 @@ public class PasswordResetService {
     // ==========================================
 
 
+    @Transactional
     public void resetPassword(
 
             String token,

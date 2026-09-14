@@ -27,7 +27,7 @@ public class UsersService {
     private final UsersRepository usersRepository;
 
 
-    private final com.amani.Talent.IA.service.CloudinaryService cloudinaryService;
+    private final com.amani.Talent.IA.config.CloudinaryService cloudinaryService;
 
 
 
