@@ -48,7 +48,8 @@ public class Contract {
 
 
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ContractStatus status;
 
 
 }

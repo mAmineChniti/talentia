@@ -3,6 +3,7 @@ package com.amani.Talent.IA.controller;
 
 import com.amani.Talent.IA.dto.ContractRequest;
 import com.amani.Talent.IA.dto.ContractResponse;
+import com.amani.Talent.IA.entity.ContractStatus;
 
 import com.amani.Talent.IA.service.ContractService;
 
@@ -124,7 +125,22 @@ public class ContractController {
         contractService.deleteContract(id);
 
 
-        return "Contrat supprimé avec succès";
+        return "Contrat expiré avec succès";
+
+    }
+
+
+    @PatchMapping("/{id}/status")
+    public ContractResponse setStatus(
+
+            @PathVariable Long id,
+
+            @RequestParam ContractStatus status
+
+    ){
+
+
+        return contractService.setStatus(id, status);
 
     }
 

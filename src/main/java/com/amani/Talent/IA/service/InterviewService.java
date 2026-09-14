@@ -546,7 +546,36 @@ public class InterviewService {
                         );
 
 
+        Application application =
+                interview.getApplication();
+
         interviewRepository.delete(interview);
+
+
+        // Annuler l'avancement provoqué par la planification : la suppression
+        // d'un entretien fait reculer la candidature d'une étape, sinon elle
+        // resterait bloquée à un stade sans entretien (ex. TECHNICAL_INTERVIEW
+        // sans entretien planifié). Les statuts terminaux ne sont jamais touchés.
+        if(application != null
+                && application.getStatus() == ApplicationStatus.TECHNICAL_INTERVIEW){
+
+            application.setStatus(
+                    ApplicationStatus.HR_INTERVIEW
+            );
+
+            applicationRepository.save(application);
+
+        }
+        else if(application != null
+                && application.getStatus() == ApplicationStatus.HR_INTERVIEW){
+
+            application.setStatus(
+                    ApplicationStatus.PENDING
+            );
+
+            applicationRepository.save(application);
+
+        }
 
     }
     public void confirmInterview(Integer id){

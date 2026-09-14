@@ -5,6 +5,7 @@ import com.amani.Talent.IA.dto.ContractRequest;
 import com.amani.Talent.IA.dto.ContractResponse;
 
 import com.amani.Talent.IA.entity.Contract;
+import com.amani.Talent.IA.entity.ContractStatus;
 import com.amani.Talent.IA.entity.Employee;
 
 import com.amani.Talent.IA.repository.ContractRepository;
@@ -80,7 +81,7 @@ public class ContractService {
         );
 
 
-        contract.setStatus("ACTIVE");
+        contract.setStatus(ContractStatus.ACTIVE);
 
 
 
@@ -223,6 +224,8 @@ public class ContractService {
     // DELETE
 
 
+    // Suppression logique : le contrat passe à EXPIRED plutôt que d'être
+    // supprimé, pour conserver l'historique contractuel de l'employé.
     public void deleteContract(Long id){
 
 
@@ -235,7 +238,32 @@ public class ContractService {
                         );
 
 
-        contractRepository.delete(contract);
+        contract.setStatus(ContractStatus.EXPIRED);
+
+        contractRepository.save(contract);
+
+    }
+
+
+    public ContractResponse setStatus(Long id, ContractStatus status){
+
+
+        Contract contract =
+                contractRepository.findById(id)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Contrat introuvable"
+                                )
+                        );
+
+
+        contract.setStatus(status);
+
+        Contract updated =
+                contractRepository.save(contract);
+
+
+        return convertToResponse(updated);
 
     }
 

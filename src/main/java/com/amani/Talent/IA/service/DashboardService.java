@@ -4,6 +4,7 @@ package com.amani.Talent.IA.service;
 import com.amani.Talent.IA.dto.DashboardResponse;
 import com.amani.Talent.IA.entity.Attendance;
 import com.amani.Talent.IA.entity.AttendanceStatus;
+import com.amani.Talent.IA.entity.ContractStatus;
 import com.amani.Talent.IA.entity.LeaveStatus;
 import com.amani.Talent.IA.repository.*;
 
@@ -104,12 +105,12 @@ public class DashboardService {
 
 
         response.setActiveContracts(
-                contractRepository.countByStatus("ACTIVE")
+                contractRepository.countByStatus(ContractStatus.ACTIVE)
         );
 
 
         response.setExpiredContracts(
-                contractRepository.countByStatus("EXPIRED")
+                contractRepository.countByStatus(ContractStatus.EXPIRED)
         );
 
 

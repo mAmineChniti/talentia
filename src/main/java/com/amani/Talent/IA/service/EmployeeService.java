@@ -263,6 +263,11 @@ public class EmployeeService {
 
 
 
+    // Suppression logique : l'employé est désactivé plutôt que supprimé,
+    // car les tables attendance, contracts, leaves, payroll et
+    // training_enrollments référencent employees via clé étrangère.
+    // Une suppression physique échouerait (contrainte FK) et détruirait
+    // l'historique RH.
     public void deleteEmployee(Integer id){
 
 
@@ -275,7 +280,32 @@ public class EmployeeService {
                         );
 
 
-        employeeRepository.delete(employee);
+        employee.setActive(false);
+
+        employeeRepository.save(employee);
+
+    }
+
+
+    public EmployeeResponse setActive(Integer id, boolean active){
+
+
+        Employee employee =
+                employeeRepository.findById(id)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Employé introuvable"
+                                )
+                        );
+
+
+        employee.setActive(active);
+
+        Employee updated =
+                employeeRepository.save(employee);
+
+
+        return convert(updated);
 
     }
 
@@ -337,6 +367,11 @@ public class EmployeeService {
 
         response.setActive(
                 employee.getActive()
+        );
+
+
+        response.setQrImageUrl(
+                employee.getQrImageUrl()
         );
 
 

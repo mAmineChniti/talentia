@@ -2,6 +2,7 @@ package com.amani.Talent.IA.repository;
 
 
 import com.amani.Talent.IA.entity.Contract;
+import com.amani.Talent.IA.entity.ContractStatus;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,7 +14,7 @@ public interface ContractRepository
 
 
     List<Contract> findByEmployeeId(Long employeeId);
-    long countByStatus(String status);
+    long countByStatus(ContractStatus status);
 
 
 }

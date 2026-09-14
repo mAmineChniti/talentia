@@ -89,16 +89,28 @@ public class EmployeeController {
 
 
 
-
     @DeleteMapping("/{id}")
     public String delete(
             @PathVariable Integer id
     ){
 
+
         employeeService.deleteEmployee(id);
 
 
-        return "Employé supprimé avec succès";
+        return "Employé désactivé avec succès";
+
+    }
+
+
+    @PatchMapping("/{id}/active")
+    public EmployeeResponse setActive(
+            @PathVariable Integer id,
+            @RequestParam boolean active
+    ){
+
+
+        return employeeService.setActive(id, active);
 
     }
 

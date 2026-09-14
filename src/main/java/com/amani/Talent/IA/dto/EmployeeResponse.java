@@ -37,4 +37,7 @@ public class EmployeeResponse {
 
     private Boolean active;
 
+
+    private String qrImageUrl;
+
 }

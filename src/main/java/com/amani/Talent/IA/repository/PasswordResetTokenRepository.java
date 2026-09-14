@@ -19,4 +19,7 @@ public interface PasswordResetTokenRepository
     findByToken(String token);
 
 
+    void deleteByUserId(Integer userId);
+
+
 }
