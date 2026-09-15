@@ -3,6 +3,7 @@ package com.amani.Talent.IA.controller;
 
 import com.amani.Talent.IA.dto.ApplicationRequest;
 import com.amani.Talent.IA.dto.ApplicationResponse;
+import com.amani.Talent.IA.dto.RoleChangeRequest;
 import com.amani.Talent.IA.entity.Application;
 import com.amani.Talent.IA.entity.ApplicationStatus;
 import com.amani.Talent.IA.service.ApplicationService;
@@ -69,12 +70,14 @@ public class ApplicationController {
     @PutMapping("/{id}/status")
     public ApplicationResponse updateStatus(
             @PathVariable Long id,
-            @RequestParam ApplicationStatus status
+            @RequestParam ApplicationStatus status,
+            @RequestBody(required = false) RoleChangeRequest hiringDetails
     ){
 
         return applicationService.updateStatus(
                 id,
-                status
+                status,
+                hiringDetails
         );
 
     }

@@ -55,12 +55,14 @@ public class DashboardService {
         */
 
 
+        // Employés bannis : exclus de tous les compteurs,
+        // comme s'ils n'existaient plus
         long totalEmployees =
-                employeeRepository.count();
+                employeeRepository.countVisible();
 
 
         long activeEmployees =
-                employeeRepository.countByActiveTrue();
+                employeeRepository.countActiveVisible();
 
 
 
@@ -82,17 +84,17 @@ public class DashboardService {
 
 
         response.setTotalCandidates(
-                candidateRepository.count()
+                candidateRepository.countVisible()
         );
 
 
         response.setTotalApplications(
-                applicationRepository.count()
+                applicationRepository.countVisible()
         );
 
 
         response.setTotalInterviews(
-                interviewRepository.count()
+                interviewRepository.countVisible()
         );
 
 
@@ -105,12 +107,12 @@ public class DashboardService {
 
 
         response.setActiveContracts(
-                contractRepository.countByStatus(ContractStatus.ACTIVE)
+                contractRepository.countVisibleByStatus(ContractStatus.ACTIVE)
         );
 
 
         response.setExpiredContracts(
-                contractRepository.countByStatus(ContractStatus.EXPIRED)
+                contractRepository.countVisibleByStatus(ContractStatus.EXPIRED)
         );
 
 
@@ -124,12 +126,12 @@ public class DashboardService {
 
 
         response.setTotalPayrolls(
-                payrollRepository.count()
+                payrollRepository.countVisible()
         );
 
 
         BigDecimal totalSalary =
-                payrollRepository.sumSalary();
+                payrollRepository.sumSalaryVisible();
 
 
         response.setTotalSalary(
@@ -140,17 +142,17 @@ public class DashboardService {
 
 
         response.setAverageSalary(
-                payrollRepository.averageSalary()
+                payrollRepository.averageSalaryVisible()
         );
 
 
         response.setMaxSalary(
-                payrollRepository.maxSalary()
+                payrollRepository.maxSalaryVisible()
         );
 
 
         response.setMinSalary(
-                payrollRepository.minSalary()
+                payrollRepository.minSalaryVisible()
         );
 
 
@@ -188,8 +190,15 @@ public class DashboardService {
 
         LocalDate today = LocalDate.now();
 
+        // Pointages des employés bannis : exclus
         List<Attendance> todayRecords =
-                attendanceRepository.findByDate(today);
+                attendanceRepository.findByDate(today)
+                        .stream()
+                        .filter(a -> a.getEmployee() == null
+                                || a.getEmployee().getUser() == null
+                                || !Boolean.TRUE.equals(a.getEmployee()
+                                        .getUser().getBanned()))
+                        .toList();
 
         long presentToday = todayRecords.stream()
                 .filter(a -> a.getStatus() == AttendanceStatus.PRESENT)
@@ -217,21 +226,35 @@ public class DashboardService {
         */
 
 
+        // Congés des employés bannis : exclus
         response.setPendingLeaves(
-                (long) leaveRepository.findByStatus(LeaveStatus.PENDING).size()
+                countVisibleLeaves(LeaveStatus.PENDING)
         );
 
         response.setApprovedLeaves(
-                (long) leaveRepository.findByStatus(LeaveStatus.APPROVED).size()
+                countVisibleLeaves(LeaveStatus.APPROVED)
         );
 
         response.setRejectedLeaves(
-                (long) leaveRepository.findByStatus(LeaveStatus.REJECTED).size()
+                countVisibleLeaves(LeaveStatus.REJECTED)
         );
 
 
 
         return response;
+
+    }
+
+
+    private long countVisibleLeaves(LeaveStatus status){
+
+        return leaveRepository.findByStatus(status)
+                .stream()
+                .filter(leave -> leave.getEmployee() == null
+                        || leave.getEmployee().getUser() == null
+                        || !Boolean.TRUE.equals(leave.getEmployee()
+                                .getUser().getBanned()))
+                .count();
 
     }
 

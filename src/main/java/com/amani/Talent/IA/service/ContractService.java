@@ -50,6 +50,16 @@ public class ContractService {
                         );
 
 
+        // Employé banni : aucun contrat possible
+        if(isEmployeeBanned(employee)){
+
+            throw new RuntimeException(
+                    "Employé introuvable"
+            );
+
+        }
+
+
 
         Contract contract = new Contract();
 
@@ -103,8 +113,10 @@ public class ContractService {
     public List<ContractResponse> getAllContracts(){
 
 
+        // Contrats des employés bannis : invisibles
         return contractRepository.findAll()
                 .stream()
+                .filter(contract -> !isEmployeeBanned(contract.getEmployee()))
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
 
@@ -129,6 +141,16 @@ public class ContractService {
                         );
 
 
+        // Contrat d'un employé banni : introuvable
+        if(isEmployeeBanned(contract.getEmployee())){
+
+            throw new RuntimeException(
+                    "Contrat introuvable"
+            );
+
+        }
+
+
         return convertToResponse(contract);
 
     }
@@ -147,9 +169,11 @@ public class ContractService {
     ){
 
 
+        // Historique d'un employé banni : vide
         return contractRepository
                 .findByEmployeeId(employeeId)
                 .stream()
+                .filter(contract -> !isEmployeeBanned(contract.getEmployee()))
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
 
@@ -274,6 +298,15 @@ public class ContractService {
 
 
     // CONVERT ENTITY -> DTO
+
+
+    private boolean isEmployeeBanned(Employee employee){
+
+        return employee != null
+                && employee.getUser() != null
+                && Boolean.TRUE.equals(employee.getUser().getBanned());
+
+    }
 
 
     private ContractResponse convertToResponse(

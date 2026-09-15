@@ -65,6 +65,17 @@ public class PasswordResetService {
                         );
 
 
+        // Compte banni : pas de réinitialisation possible,
+        // même message pour ne pas révéler l'existence du compte
+        if(Boolean.TRUE.equals(user.getBanned())){
+
+            throw new RuntimeException(
+                    "Email introuvable"
+            );
+
+        }
+
+
 
 
 
@@ -215,6 +226,18 @@ public class PasswordResetService {
         users user =
 
                 resetToken.getUser();
+
+
+        // Compte banni entre-temps : refuser la réinitialisation
+        if(Boolean.TRUE.equals(user.getBanned())){
+
+            tokenRepository.delete(resetToken);
+
+            throw new RuntimeException(
+                    "Token invalide"
+            );
+
+        }
 
 
 

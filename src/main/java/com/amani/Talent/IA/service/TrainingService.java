@@ -40,6 +40,20 @@ public class TrainingService {
 
 
 // ============================
+// EMPLOYÉ BANNI ?
+// ============================
+
+
+    private boolean isEmployeeBanned(Employee employee){
+
+        return employee != null
+                && employee.getUser() != null
+                && Boolean.TRUE.equals(employee.getUser().getBanned());
+
+    }
+
+
+// ============================
 // CREATE TRAINING
 // ============================
 
@@ -86,10 +100,15 @@ public class TrainingService {
 
         trainings.forEach(training -> {
 
-            Long count =
-                    enrollmentRepository.countByTrainingId(
+            // Les inscrits bannis ne comptent plus
+            long count =
+                    enrollmentRepository.findByTrainingId(
                             training.getId()
-                    );
+                    )
+                            .stream()
+                            .filter(enrollment ->
+                                    !isEmployeeBanned(enrollment.getEmployee()))
+                            .count();
 
 
             training.setNumberOfParticipants(count);
@@ -161,14 +180,24 @@ public class TrainingService {
                                 ()->new RuntimeException("Employé introuvable")
                         );
 
+        // Employé banni : ne peut plus s'inscrire
+        if(isEmployeeBanned(employee)){
+            throw new RuntimeException("Employé introuvable");
+        }
+
         // Duplicate check
         if(enrollmentRepository.existsByTrainingIdAndEmployeeId(
                 trainingId, employeeId)){
             throw new RuntimeException("Cet employé est déjà inscrit à cette formation");
         }
 
+        // Les inscrits bannis ne comptent plus dans la capacité
         long total =
-                enrollmentRepository.countByTrainingId(trainingId);
+                enrollmentRepository.findByTrainingId(trainingId)
+                        .stream()
+                        .filter(enrollment ->
+                                !isEmployeeBanned(enrollment.getEmployee()))
+                        .count();
 
         if(total >= training.getCapacity()){
             throw new RuntimeException("Capacité maximale atteinte");
@@ -223,8 +252,13 @@ public class TrainingService {
     public List<TrainingEnrollment> getTrainingByEmployee(Long employeeId){
 
 
+        // Inscriptions d'un employé banni : invisibles
         return enrollmentRepository
-                .findByEmployeeId(employeeId);
+                .findByEmployeeId(employeeId)
+                .stream()
+                .filter(enrollment ->
+                        !isEmployeeBanned(enrollment.getEmployee()))
+                .toList();
 
     }
 
@@ -237,7 +271,12 @@ public class TrainingService {
 
     public List<TrainingEnrollment> getEnrollmentsByTraining(Long trainingId){
 
-        return enrollmentRepository.findByTrainingId(trainingId);
+        // Inscrits bannis : invisibles
+        return enrollmentRepository.findByTrainingId(trainingId)
+                .stream()
+                .filter(enrollment ->
+                        !isEmployeeBanned(enrollment.getEmployee()))
+                .toList();
 
     }
 

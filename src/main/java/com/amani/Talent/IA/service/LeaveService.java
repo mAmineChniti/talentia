@@ -31,6 +31,11 @@ public class LeaveService {
         Employee employee = employeeRepository.findById(request.getEmployeeId())
                 .orElseThrow(() -> new RuntimeException("Employee introuvable"));
 
+        // Employé banni : ne peut plus demander de congé
+        if(isEmployeeBanned(employee)) {
+            throw new RuntimeException("Employee introuvable");
+        }
+
         Leave leave = new Leave();
 
         leave.setEmployee(employee);
@@ -55,24 +60,30 @@ public class LeaveService {
 
     public List<LeaveResponse> getAllLeaves() {
 
+        // Congés des employés bannis : invisibles
         return leaveRepository.findAll()
                 .stream()
+                .filter(leave -> !isEmployeeBanned(leave.getEmployee()))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     public List<LeaveResponse> getLeavesByEmployee(Integer employeeId) {
 
+        // Historique d'un employé banni : vide
         return leaveRepository.findByEmployeeId(employeeId)
                 .stream()
+                .filter(leave -> !isEmployeeBanned(leave.getEmployee()))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     public List<LeaveResponse> getPendingLeaves() {
 
+        // Congés des employés bannis : invisibles
         return leaveRepository.findByStatus(LeaveStatus.PENDING)
                 .stream()
+                .filter(leave -> !isEmployeeBanned(leave.getEmployee()))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -81,6 +92,11 @@ public class LeaveService {
 
         Leave leave = leaveRepository.findById(leaveId)
                 .orElseThrow(() -> new RuntimeException("Congé introuvable"));
+
+        // Congé d'un employé banni : introuvable
+        if(isEmployeeBanned(leave.getEmployee())) {
+            throw new RuntimeException("Congé introuvable");
+        }
 
         users user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
@@ -99,6 +115,11 @@ public class LeaveService {
         Leave leave = leaveRepository.findById(leaveId)
                 .orElseThrow(() -> new RuntimeException("Congé introuvable"));
 
+        // Congé d'un employé banni : introuvable
+        if(isEmployeeBanned(leave.getEmployee())) {
+            throw new RuntimeException("Congé introuvable");
+        }
+
         users user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
 
@@ -116,6 +137,11 @@ public class LeaveService {
         Leave leave = leaveRepository.findById(leaveId)
                 .orElseThrow(() -> new RuntimeException("Congé introuvable"));
 
+        // Congé d'un employé banni : introuvable
+        if(isEmployeeBanned(leave.getEmployee())) {
+            throw new RuntimeException("Congé introuvable");
+        }
+
         if (leave.getStatus() != LeaveStatus.PENDING) {
             throw new RuntimeException("Impossible d'annuler un congé déjà traité");
         }
@@ -125,6 +151,14 @@ public class LeaveService {
         leaveRepository.save(leave);
 
         return mapToResponse(leave);
+    }
+
+    private boolean isEmployeeBanned(Employee employee) {
+
+        return employee != null
+                && employee.getUser() != null
+                && Boolean.TRUE.equals(employee.getUser().getBanned());
+
     }
 
     private LeaveResponse mapToResponse(Leave leave) {

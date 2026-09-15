@@ -51,6 +51,16 @@ public class AuthService {
         }
 
 
+        // Compte banni : accès refusé, comme s'il n'existait plus
+        if(Boolean.TRUE.equals(user.getBanned())){
+
+            throw new RuntimeException(
+                    "Compte désactivé, veuillez contacter l'administration"
+            );
+
+        }
+
+
 
         LoginResponse response =
                 new LoginResponse();

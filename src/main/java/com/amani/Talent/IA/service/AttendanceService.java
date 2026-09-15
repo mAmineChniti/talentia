@@ -51,6 +51,17 @@ public class AttendanceService {
         }
 
 
+        // Employé banni : pointage refusé
+        if(employee.getUser() != null
+                && Boolean.TRUE.equals(employee.getUser().getBanned())){
+
+            throw new RuntimeException(
+                    "QR Code invalide"
+            );
+
+        }
+
+
 
         LocalDate today =
                 LocalDate.now();
@@ -224,8 +235,12 @@ public class AttendanceService {
     public List<Attendance> getByEmployee(Integer employeeId){
 
 
+        // Historique d'un employé banni : vide
         return attendanceRepository
-                .findByEmployee_Id(employeeId);
+                .findByEmployee_Id(employeeId)
+                .stream()
+                .filter(attendance -> !isEmployeeBanned(attendance))
+                .toList();
 
     }
 
@@ -241,11 +256,15 @@ public class AttendanceService {
             LocalDate date
     ){
 
+        // Historique d'un employé banni : vide
         return attendanceRepository
                 .findByEmployee_IdAndDate(
                         employeeId,
                         date
-                );
+                )
+                .stream()
+                .filter(attendance -> !isEmployeeBanned(attendance))
+                .toList();
 
     }
 
@@ -260,8 +279,22 @@ public class AttendanceService {
     public List<Attendance> getByDate(LocalDate date){
 
 
+        // Pointages des employés bannis : invisibles
         return attendanceRepository
-                .findByDate(date);
+                .findByDate(date)
+                .stream()
+                .filter(attendance -> !isEmployeeBanned(attendance))
+                .toList();
+
+    }
+
+
+    private boolean isEmployeeBanned(Attendance attendance){
+
+        return attendance.getEmployee() != null
+                && attendance.getEmployee().getUser() != null
+                && Boolean.TRUE.equals(attendance.getEmployee()
+                        .getUser().getBanned());
 
     }
 

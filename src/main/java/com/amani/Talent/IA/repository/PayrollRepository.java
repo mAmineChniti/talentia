@@ -44,4 +44,29 @@ public interface PayrollRepository
     )
     BigDecimal minSalary();
 
+    // Paies des employés bannis : exclues
+    @Query(
+            "SELECT COUNT(p) FROM Payroll p WHERE p.employee IS NULL OR p.employee.user IS NULL OR p.employee.user.banned IS NULL OR p.employee.user.banned = false"
+    )
+    long countVisible();
+
+    @Query(
+            "SELECT SUM(p.netSalary) FROM Payroll p WHERE p.employee IS NULL OR p.employee.user IS NULL OR p.employee.user.banned IS NULL OR p.employee.user.banned = false"
+    )
+    BigDecimal sumSalaryVisible();
+
+    @Query(
+            "SELECT AVG(p.netSalary) FROM Payroll p WHERE p.employee IS NULL OR p.employee.user IS NULL OR p.employee.user.banned IS NULL OR p.employee.user.banned = false"
+    )
+    BigDecimal averageSalaryVisible();
+
+    @Query(
+            "SELECT MAX(p.netSalary) FROM Payroll p WHERE p.employee IS NULL OR p.employee.user IS NULL OR p.employee.user.banned IS NULL OR p.employee.user.banned = false"
+    )
+    BigDecimal maxSalaryVisible();
+
+    @Query(
+            "SELECT MIN(p.netSalary) FROM Payroll p WHERE p.employee IS NULL OR p.employee.user IS NULL OR p.employee.user.banned IS NULL OR p.employee.user.banned = false"
+    )
+    BigDecimal minSalaryVisible();
 }
