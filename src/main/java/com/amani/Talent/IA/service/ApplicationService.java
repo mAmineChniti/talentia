@@ -4,6 +4,7 @@ package com.amani.Talent.IA.service;
 import com.amani.Talent.IA.dto.AnalysisResponse;
 import com.amani.Talent.IA.dto.ApplicationRequest;
 import com.amani.Talent.IA.dto.ApplicationResponse;
+import com.amani.Talent.IA.dto.RoleChangeRequest;
 import com.amani.Talent.IA.entity.*;
 
 import com.amani.Talent.IA.repository.ApplicationRepository;
@@ -43,6 +44,8 @@ public class ApplicationService {
 
     private final EmailService emailService;
 
+    private final RoleTransitionService roleTransitionService;
+
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -64,6 +67,16 @@ public class ApplicationService {
                                         "Utilisateur introuvable"
                                 )
                         );
+
+
+        // Utilisateur banni : ne peut plus postuler
+        if(Boolean.TRUE.equals(user.getBanned())){
+
+            throw new RuntimeException(
+                    "Compte désactivé, action impossible"
+            );
+
+        }
 
 
 
@@ -362,15 +375,19 @@ public class ApplicationService {
     public List<ApplicationResponse> getAllApplications(){
 
 
+        // Candidatures des utilisateurs bannis : invisibles
         return applicationRepository.findAll()
                 .stream()
+                .filter(application -> !isCandidateBanned(application))
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
 
     }
     public List<ApplicationResponse> getApplicationsByPostId(Long postId) {
+        // Candidatures des utilisateurs bannis : invisibles
         return applicationRepository.findByPostId(postId)
                 .stream()
+                .filter(application -> !isCandidateBanned(application))
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
@@ -386,6 +403,16 @@ public class ApplicationService {
                                         "Candidature introuvable"
                                 )
                         );
+
+
+        // Candidature d'un utilisateur banni : introuvable
+        if(isCandidateBanned(application)){
+
+            throw new RuntimeException(
+                    "Candidature introuvable"
+            );
+
+        }
 
 
         return convertToResponse(application);
@@ -404,7 +431,8 @@ public class ApplicationService {
 
     public ApplicationResponse updateStatus(
             Long applicationId,
-            ApplicationStatus newStatus
+            ApplicationStatus newStatus,
+            RoleChangeRequest hiringDetails
     ){
 
 
@@ -415,6 +443,16 @@ public class ApplicationService {
                                         "Candidature introuvable"
                                 )
                         );
+
+
+        // Candidature d'un utilisateur banni : introuvable
+        if(isCandidateBanned(application)){
+
+            throw new RuntimeException(
+                    "Candidature introuvable"
+            );
+
+        }
 
 
         ApplicationStatus currentStatus =
@@ -448,7 +486,10 @@ public class ApplicationService {
 
 
 
-        // Si accepté → promouvoir le candidat en EMPLOYEE
+        // Si accepté → embauche complète : rôle
+        // EMPLOYEE + fiche employé + contrat actif.
+        // Les renseignements d'embauche sont exigés
+        // quand le candidat n'a pas encore de fiche.
 
         if(newStatus == ApplicationStatus.ACCEPTED){
 
@@ -458,6 +499,13 @@ public class ApplicationService {
             user.setRole(Role.EMPLOYEE);
 
             usersRepository.save(user);
+
+            roleTransitionService.provisionEmployment(
+                    user,
+                    hiringDetails != null
+                            ? hiringDetails
+                            : new RoleChangeRequest()
+            );
 
         }
 
@@ -605,6 +653,24 @@ public class ApplicationService {
 
     }
 
+
+
+
+    // =====================================
+    // Candidat banni ?
+    // =====================================
+
+
+    private boolean isCandidateBanned(
+            Application application
+    ){
+
+        return application.getCandidate() != null
+                && application.getCandidate().getUser() != null
+                && Boolean.TRUE.equals(application.getCandidate()
+                        .getUser().getBanned());
+
+    }
 
 
 

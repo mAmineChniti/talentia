@@ -33,6 +33,11 @@ public class AbsenceScheduler {
                 employeeRepository.findByActiveTrue();
 
         for (Employee employee : activeEmployees) {
+            // Employé banni : comme s'il n'existait plus, aucun pointage
+            if (employee.getUser() != null
+                    && Boolean.TRUE.equals(employee.getUser().getBanned())) {
+                continue;
+            }
             Attendance record =
                     attendanceRepository
                             .findByEmployee_IdAndDate(

@@ -539,8 +539,14 @@ public class PayslipService {
     // ==============================
 
     public List<PayslipResponse> getAllPayslips() {
+        // Fiches des employés bannis : invisibles
         return payslipRepository.findAll()
                 .stream()
+                .filter(payslip -> payslip.getPayroll() == null
+                        || payslip.getPayroll().getEmployee() == null
+                        || payslip.getPayroll().getEmployee().getUser() == null
+                        || !Boolean.TRUE.equals(payslip.getPayroll()
+                                .getEmployee().getUser().getBanned()))
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }

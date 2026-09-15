@@ -94,7 +94,12 @@ public class Post {
             return 0;
         }
 
-        return likes.size();
+        // Les likes des utilisateurs bannis ne comptent plus
+        return (int) likes
+                .stream()
+                .filter(like -> like.getUser() == null
+                        || !Boolean.TRUE.equals(like.getUser().getBanned()))
+                .count();
 
     }
 

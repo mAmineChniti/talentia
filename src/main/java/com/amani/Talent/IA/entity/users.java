@@ -57,6 +57,8 @@ public class users {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private Boolean banned = false;
+
 
 
     private String city;

@@ -377,24 +377,39 @@ public class UsersService {
 
 
     // =====================================
-    // Changer le rôle (admin only)
+    // Bannir un utilisateur (admin only)
+    // L'utilisateur banni devient invisible
+    // partout : posts, commentaires, likes,
+    // candidatures, formations, etc.
     // =====================================
 
 
-    public users changeRole(
-            Integer targetUserId,
-            Role newRole
+    public users banUser(
+            Integer targetUserId
     ){
-
-        if(newRole != Role.HR && newRole != Role.ADMIN){
-            throw new RuntimeException(
-                    "On ne peut promouvoir qu'en HR ou ADMIN"
-            );
-        }
 
         users user = getUserById(targetUserId);
 
-        user.setRole(newRole);
+        user.setBanned(true);
+
+        return usersRepository.save(user);
+
+    }
+
+
+
+    // =====================================
+    // Débannir un utilisateur (admin only)
+    // =====================================
+
+
+    public users unbanUser(
+            Integer targetUserId
+    ){
+
+        users user = getUserById(targetUserId);
+
+        user.setBanned(false);
 
         return usersRepository.save(user);
 

@@ -1,10 +1,12 @@
 package com.amani.Talent.IA.service;
 
 
+import com.amani.Talent.IA.dto.ContractRequest;
 import com.amani.Talent.IA.dto.EmployeeRequest;
 import com.amani.Talent.IA.dto.EmployeeResponse;
 
 import com.amani.Talent.IA.entity.Employee;
+import com.amani.Talent.IA.entity.Role;
 import com.amani.Talent.IA.entity.users;
 
 import com.amani.Talent.IA.repository.EmployeeRepository;
@@ -14,6 +16,7 @@ import com.amani.Talent.IA.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDate;
@@ -34,10 +37,14 @@ public class EmployeeService {
     private final UsersRepository usersRepository;
     private final QrCodeService qrCodeService;
     private final EmailService emailService;
+    private final ContractService contractService;
 
 
 
 
+    // Embauche complète : fiche employé + QR +
+    // passage du rôle à EMPLOYEE + contrat ACTIF
+    @Transactional
     public EmployeeResponse createEmployee(
             EmployeeRequest request
     ){
@@ -66,6 +73,15 @@ public class EmployeeService {
                                 )
                         );
 
+
+        // Utilisateur banni : ne peut pas devenir employé
+        if(Boolean.TRUE.equals(user.getBanned())){
+
+            throw new RuntimeException(
+                    "Utilisateur introuvable"
+            );
+
+        }
 
 
 
@@ -129,6 +145,52 @@ public class EmployeeService {
         Employee saved =
                 employeeRepository.save(employee);
 
+
+        // Un candidat embauché devient employé.
+        // Les rôles HR / ADMIN sont conservés.
+        if(user.getRole() == Role.CANDIDATE){
+
+            user.setRole(Role.EMPLOYEE);
+
+            usersRepository.save(user);
+
+        }
+
+
+        // Contrat initial : actif dès l'embauche
+        ContractRequest contractRequest = new ContractRequest();
+
+        contractRequest.setContractType(
+                request.getContractType() != null
+                        ? request.getContractType()
+                        : "CDI"
+        );
+
+        contractRequest.setStartDate(
+                request.getContractStartDate() != null
+                        ? request.getContractStartDate()
+                        : LocalDate.now()
+        );
+
+        contractRequest.setEndDate(
+                request.getContractEndDate()
+        );
+
+        contractRequest.setSalary(
+                request.getSalary()
+        );
+
+        contractRequest.setWorkingHours(
+                request.getWorkingHours() != null
+                        ? request.getWorkingHours()
+                        : 40
+        );
+
+        contractService.createContract(
+                saved.getId(),
+                contractRequest
+        );
+
         String employeeName =
                 (user.getName() == null ? "" : user.getName())
                         + " "
@@ -157,8 +219,10 @@ public class EmployeeService {
     public List<EmployeeResponse> getAllEmployees(){
 
 
+        // Employés bannis : invisibles, comme s'ils n'existaient plus
         return employeeRepository.findAll()
                 .stream()
+                .filter(employee -> !isUserBanned(employee))
                 .map(this::convert)
                 .collect(Collectors.toList());
 
@@ -183,6 +247,16 @@ public class EmployeeService {
                         );
 
 
+        // Employé banni : introuvable
+        if(isUserBanned(employee)){
+
+            throw new RuntimeException(
+                    "Employé introuvable"
+            );
+
+        }
+
+
         return convert(employee);
 
     }
@@ -197,6 +271,16 @@ public class EmployeeService {
                                         "Employé introuvable"
                                 )
                         );
+
+
+        // Employé banni : introuvable
+        if(isUserBanned(employee)){
+
+            throw new RuntimeException(
+                    "Employé introuvable"
+            );
+
+        }
 
 
         return convert(employee);
@@ -313,6 +397,16 @@ public class EmployeeService {
 
 
 
+
+
+    private boolean isUserBanned(
+            Employee employee
+    ){
+
+        return employee.getUser() != null
+                && Boolean.TRUE.equals(employee.getUser().getBanned());
+
+    }
 
 
     private EmployeeResponse convert(

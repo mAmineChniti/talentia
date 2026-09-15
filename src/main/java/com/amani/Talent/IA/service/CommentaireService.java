@@ -55,6 +55,19 @@ public class CommentaireService {
                 );
 
 
+        // Utilisateur banni : ne peut plus commenter
+        if(Boolean.TRUE.equals(user.getBanned())){
+            throw new RuntimeException("Compte désactivé, action impossible");
+        }
+
+
+        // Post d'un utilisateur banni : introuvable
+        if(post.getAuteur() != null
+                && Boolean.TRUE.equals(post.getAuteur().getBanned())){
+            throw new RuntimeException("Post introuvable");
+        }
+
+
 
         commentaire.setPost(post);
 
@@ -74,7 +87,12 @@ public class CommentaireService {
 
     public List<Commentaire> getAllCommentaires(){
 
-        return commentaireRepository.findAll();
+        // Commentaires des utilisateurs bannis : invisibles
+        return commentaireRepository.findAll()
+                .stream()
+                .filter(c -> c.getAuteur() == null
+                        || !Boolean.TRUE.equals(c.getAuteur().getBanned()))
+                .toList();
 
     }
 
@@ -97,7 +115,12 @@ public class CommentaireService {
 
     public List<Commentaire> getCommentairesByPost(Long postId){
 
-        return commentaireRepository.findByPostId(postId);
+        // Commentaires des utilisateurs bannis : invisibles
+        return commentaireRepository.findByPostId(postId)
+                .stream()
+                .filter(c -> c.getAuteur() == null
+                        || !Boolean.TRUE.equals(c.getAuteur().getBanned()))
+                .toList();
 
     }
 
@@ -107,7 +130,13 @@ public class CommentaireService {
 
     public List<Commentaire> getCommentairesByUser(Integer userId){
 
-        return commentaireRepository.findByAuteurId(userId);
+        // Historique d'un utilisateur banni : vide, comme s'il
+        // n'avait jamais existé
+        return commentaireRepository.findByAuteurId(userId)
+                .stream()
+                .filter(c -> c.getAuteur() == null
+                        || !Boolean.TRUE.equals(c.getAuteur().getBanned()))
+                .toList();
 
     }
 

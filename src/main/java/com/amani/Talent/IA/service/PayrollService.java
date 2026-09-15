@@ -40,6 +40,14 @@ public class PayrollService {
                                 new RuntimeException("Employé introuvable"));
 
 
+        // Employé banni : aucune paie possible
+        if(isEmployeeBanned(employee)){
+
+            throw new RuntimeException("Employé introuvable");
+
+        }
+
+
 
         // Salaire de base sécurisé
 
@@ -140,8 +148,10 @@ public class PayrollService {
 
     public List<PayrollResponse> getAllPayrolls() {
 
+        // Paies des employés bannis : invisibles
         return payrollRepository.findAll()
                 .stream()
+                .filter(payroll -> !isEmployeeBanned(payroll.getEmployee()))
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
 
@@ -152,8 +162,10 @@ public class PayrollService {
 
     public List<PayrollResponse> getEmployeePayrolls(Long employeeId) {
 
+        // Historique d'un employé banni : vide
         return payrollRepository.findByEmployeeId(employeeId)
                 .stream()
+                .filter(payroll -> !isEmployeeBanned(payroll.getEmployee()))
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
 
@@ -161,6 +173,15 @@ public class PayrollService {
 
 
 
+
+
+    private boolean isEmployeeBanned(Employee employee) {
+
+        return employee != null
+                && employee.getUser() != null
+                && Boolean.TRUE.equals(employee.getUser().getBanned());
+
+    }
 
 
     private PayrollResponse convertToResponse(Payroll payroll) {
@@ -226,7 +247,11 @@ public class PayrollService {
 
         List<Employee> employees = employeeRepository.findAll();
 
-        return employees.stream().map(employee -> {
+        // Employés bannis : aucune paie générée, comme s'ils
+        // n'existaient plus
+        return employees.stream()
+                .filter(employee -> !isEmployeeBanned(employee))
+                .map(employee -> {
 
             BigDecimal baseSalary = employee.getSalary() != null
                     ? employee.getSalary()

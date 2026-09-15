@@ -71,6 +71,19 @@ public class LikeService {
                 );
 
 
+        // Utilisateur banni : ne peut plus liker
+        if(Boolean.TRUE.equals(user.getBanned())){
+            throw new RuntimeException("Compte désactivé, action impossible");
+        }
+
+
+        // Post d'un utilisateur banni : introuvable
+        if(post.getAuteur() != null
+                && Boolean.TRUE.equals(post.getAuteur().getBanned())){
+            throw new RuntimeException("Post introuvable");
+        }
+
+
 
         var likeExiste =
                 likeRepository.findByUserAndPost(user,post);
@@ -131,7 +144,23 @@ public class LikeService {
                 );
 
 
-        return likeRepository.countByPost(post);
+        // Post d'un utilisateur banni : zéro like visible
+        if(post.getAuteur() != null
+                && Boolean.TRUE.equals(post.getAuteur().getBanned())){
+            return 0;
+        }
+
+
+        // Les likes des utilisateurs bannis ne comptent plus
+        if(post.getLikes() == null){
+            return 0;
+        }
+
+        return post.getLikes()
+                .stream()
+                .filter(like -> like.getUser() == null
+                        || !Boolean.TRUE.equals(like.getUser().getBanned()))
+                .count();
 
     }
 

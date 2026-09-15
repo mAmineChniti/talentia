@@ -55,6 +55,19 @@ public class InterviewService {
 
 
 
+        // Candidature d'un utilisateur banni : introuvable
+        if(application.getCandidate() != null
+                && application.getCandidate().getUser() != null
+                && Boolean.TRUE.equals(application.getCandidate()
+                        .getUser().getBanned())){
+
+            throw new RuntimeException(
+                    "Candidature introuvable"
+            );
+
+        }
+
+
         // Vérifier le statut de la candidature
         ApplicationStatus appStatus =
                 application.getStatus();
@@ -425,14 +438,31 @@ public class InterviewService {
 
     }
 // ==============================
+// CANDIDAT BANNI ?
+// ==============================
+
+    private boolean isCandidateBanned(
+            Interview interview
+    ){
+
+        return interview.getApplication() != null
+                && interview.getApplication().getCandidate() != null
+                && interview.getApplication().getCandidate().getUser() != null
+                && Boolean.TRUE.equals(interview.getApplication()
+                        .getCandidate().getUser().getBanned());
+
+    }
+// ==============================
 // GET ALL INTERVIEWS
 // ==============================
 
     public List<InterviewResponse> getAllInterviews(){
 
 
+        // Entretiens des candidats bannis : invisibles
         return interviewRepository.findAll()
                 .stream()
+                .filter(interview -> !isCandidateBanned(interview))
                 .map(this::convert)
                 .collect(Collectors.toList());
 
@@ -453,6 +483,16 @@ public class InterviewService {
                                         "Entretien introuvable"
                                 )
                         );
+
+
+        // Entretien d'un candidat banni : introuvable
+        if(isCandidateBanned(interview)){
+
+            throw new RuntimeException(
+                    "Entretien introuvable"
+            );
+
+        }
 
 
         return convert(interview);

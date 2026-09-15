@@ -1,8 +1,10 @@
 package com.amani.Talent.IA.controller;
 
 
+import com.amani.Talent.IA.dto.RoleChangeRequest;
 import com.amani.Talent.IA.entity.users;
 import com.amani.Talent.IA.entity.Role;
+import com.amani.Talent.IA.service.RoleTransitionService;
 import com.amani.Talent.IA.service.UsersService;
 
 
@@ -28,13 +30,17 @@ public class UsersController {
 
     private final UsersService usersService;
 
+    private final RoleTransitionService roleTransitionService;
+
 
 
     public UsersController(
-            UsersService usersService
+            UsersService usersService,
+            RoleTransitionService roleTransitionService
     ){
 
         this.usersService = usersService;
+        this.roleTransitionService = roleTransitionService;
 
     }
 
@@ -180,11 +186,46 @@ public class UsersController {
 
             @PathVariable Integer id,
 
-            @RequestParam Role role
+            @RequestParam(required = false) Role role,
+
+            @RequestBody(required = false) RoleChangeRequest body
 
     ){
 
-        return usersService.changeRole(id, role);
+        RoleChangeRequest request =
+                body != null ? body : new RoleChangeRequest();
+
+        if(request.getRole() == null){
+            request.setRole(role);
+        }
+
+        return roleTransitionService.changeRole(id, request);
+
+    }
+
+
+
+    @PutMapping("/{id}/ban")
+    public users banUser(
+
+            @PathVariable Integer id
+
+    ){
+
+        return usersService.banUser(id);
+
+    }
+
+
+
+    @PutMapping("/{id}/unban")
+    public users unbanUser(
+
+            @PathVariable Integer id
+
+    ){
+
+        return usersService.unbanUser(id);
 
     }
 

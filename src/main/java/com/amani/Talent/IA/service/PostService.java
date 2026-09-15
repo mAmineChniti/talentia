@@ -76,6 +76,16 @@ public class PostService {
                 );
 
 
+        // Utilisateur banni : ne peut plus publier
+        if(Boolean.TRUE.equals(user.getBanned())){
+
+            throw new RuntimeException(
+                    "Compte désactivé, publication impossible"
+            );
+
+        }
+
+
         Post post = new Post();
 
 
@@ -167,6 +177,9 @@ public class PostService {
 
         return postRepository.findAll()
                 .stream()
+                // Posts des utilisateurs bannis : invisibles, comme s'ils
+                // n'avaient jamais existé
+                .filter(post -> !isAuthorBanned(post))
                 .map(post -> convertToResponse(post, userId))
                 .collect(Collectors.toList());
 
@@ -191,6 +204,16 @@ public class PostService {
                                         "Post introuvable"
                                 )
                         );
+
+
+        // Post d'un utilisateur banni : introuvable
+        if(isAuthorBanned(post)){
+
+            throw new RuntimeException(
+                    "Post introuvable"
+            );
+
+        }
 
 
         return convertToResponse(post, userId);
@@ -309,6 +332,26 @@ public class PostService {
                         );
 
 
+        // Utilisateur banni : ne peut plus liker
+        if(Boolean.TRUE.equals(user.getBanned())){
+
+            throw new RuntimeException(
+                    "Compte désactivé, action impossible"
+            );
+
+        }
+
+
+        // Post d'un utilisateur banni : introuvable
+        if(isAuthorBanned(post)){
+
+            throw new RuntimeException(
+                    "Post introuvable"
+            );
+
+        }
+
+
 
         Like existingLike =
                 likeRepository
@@ -374,12 +417,33 @@ public class PostService {
                         );
 
 
-        return post.getLikes() == null ?
-                0 :
-                post.getLikes().size();
+        if(post.getLikes() == null){
+            return 0;
+        }
+
+        // Les likes des utilisateurs bannis ne comptent plus
+        return (int) post.getLikes()
+                .stream()
+                .filter(like -> like.getUser() == null
+                        || !Boolean.TRUE.equals(like.getUser().getBanned()))
+                .count();
 
     }
 
+
+
+
+    // ==============================
+    // AUTEUR BANNI ?
+    // ==============================
+
+
+    private boolean isAuthorBanned(Post post){
+
+        return post.getAuteur() != null
+                && Boolean.TRUE.equals(post.getAuteur().getBanned());
+
+    }
 
 
 
@@ -430,8 +494,21 @@ public class PostService {
         );
 
 
+        // Les likes des utilisateurs bannis ne comptent plus
+        int visibleLikes = 0;
+
+        if(post.getLikes() != null){
+
+            visibleLikes = (int) post.getLikes()
+                    .stream()
+                    .filter(like -> like.getUser() == null
+                            || !Boolean.TRUE.equals(like.getUser().getBanned()))
+                    .count();
+
+        }
+
         response.setNombreLikes(
-                post.getNombreLikes()
+                visibleLikes
         );
 
 
@@ -453,8 +530,15 @@ public class PostService {
             response.setTrainingLocation(t.getLocation());
             response.setTrainingCapacity(t.getCapacity());
             response.setTrainingStatus(t.getStatus());
+            // Les inscrits bannis ne comptent plus
             response.setTrainingEnrollmentCount(
-                    enrollmentRepository.countByTrainingId(t.getId())
+                    (long) enrollmentRepository.findByTrainingId(t.getId())
+                            .stream()
+                            .filter(enrollment -> enrollment.getEmployee() == null
+                                    || enrollment.getEmployee().getUser() == null
+                                    || !Boolean.TRUE.equals(enrollment.getEmployee()
+                                            .getUser().getBanned()))
+                            .count()
             );
         }
 
