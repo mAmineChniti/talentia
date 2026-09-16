@@ -19,6 +19,8 @@ public interface ApplicationRepository
 
     List<Application> findByPostId(Long postId);
 
+    void deleteByPostId(Long postId);
+
     // Candidatures des utilisateurs bannis : exclues
     @Query("SELECT COUNT(a) FROM Application a WHERE a.candidate IS NULL OR a.candidate.user IS NULL OR a.candidate.user.banned IS NULL OR a.candidate.user.banned = false")
     long countVisible();
