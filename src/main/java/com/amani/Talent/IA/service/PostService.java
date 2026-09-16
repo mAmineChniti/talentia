@@ -12,11 +12,14 @@ import com.amani.Talent.IA.entity.users;
 
 import com.amani.Talent.IA.repository.LikeRepository;
 import com.amani.Talent.IA.repository.PostRepository;
+import com.amani.Talent.IA.repository.ApplicationRepository;
+import com.amani.Talent.IA.repository.InterviewRepository;
 import com.amani.Talent.IA.repository.TrainingEnrollmentRepository;
 import com.amani.Talent.IA.repository.TrainingRepository;
 import com.amani.Talent.IA.repository.UsersRepository;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,6 +41,10 @@ public class PostService {
 
     private final TrainingEnrollmentRepository enrollmentRepository;
 
+    private final ApplicationRepository applicationRepository;
+
+    private final InterviewRepository interviewRepository;
+
 
 
     public PostService(
@@ -45,7 +52,9 @@ public class PostService {
             UsersRepository usersRepository,
             LikeRepository likeRepository,
             TrainingRepository trainingRepository,
-            TrainingEnrollmentRepository enrollmentRepository
+            TrainingEnrollmentRepository enrollmentRepository,
+            ApplicationRepository applicationRepository,
+            InterviewRepository interviewRepository
     ){
 
         this.postRepository = postRepository;
@@ -53,6 +62,8 @@ public class PostService {
         this.likeRepository = likeRepository;
         this.trainingRepository = trainingRepository;
         this.enrollmentRepository = enrollmentRepository;
+        this.applicationRepository = applicationRepository;
+        this.interviewRepository = interviewRepository;
 
     }
 
@@ -270,6 +281,7 @@ public class PostService {
     // ==============================
 
 
+    @Transactional
     public void deletePost(Long id){
 
 
@@ -281,6 +293,15 @@ public class PostService {
                                         "Post introuvable"
                                 )
                         );
+
+        // A job post can have applications (which can have interviews).
+        // Post.applications has no cascade, so delete them first —
+        // otherwise the delete fails on the foreign key and moderation
+        // (admin / HR) is impossible on posts that received applications.
+        for(var application : applicationRepository.findByPostId(id)){
+            interviewRepository.deleteByApplicationId(application.getId());
+        }
+        applicationRepository.deleteByPostId(id);
 
         // If FORMATION post with linked Training, delete enrollments first
         if(post.getTraining() != null){

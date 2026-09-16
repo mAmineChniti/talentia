@@ -16,6 +16,8 @@ public interface InterviewRepository
 
     List<Interview> findByApplicationId(Integer applicationId);
 
+    void deleteByApplicationId(Long applicationId);
+
     // Entretiens des candidats bannis : exclus
     @Query("SELECT COUNT(i) FROM Interview i WHERE i.application IS NULL OR i.application.candidate IS NULL OR i.application.candidate.user IS NULL OR i.application.candidate.user.banned IS NULL OR i.application.candidate.user.banned = false")
     long countVisible();
